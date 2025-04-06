@@ -1,20 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ethers, isAddress } from 'ethers';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-// 1. Импорт иконок (пример, если папка icons лежит рядом)
-import React from 'react';
-
-function WalletPage() {
-  const tokens = [
-    { symbol: 'ETH', name: 'Ethereum', icon: '/icons/ETH.png' },
-    { symbol: 'USDT', name: 'Tether USD', icon: '/icons/USDT.png' },
-    { symbol: 'BTC', name: 'Bitcoin', icon: '/icons/BTC.png' },
-    { symbol: 'SHIBA', name: 'Shiba Inu', icon: '/icons/SHIBA.png' },
-    { symbol: 'APH', name: 'Aphelion Token', icon: '/icons/APH.png' }
-  ];  }
-
 
 function WalletPage() {
   const [mnemonic, setMnemonic] = useState('');
@@ -35,13 +22,13 @@ function WalletPage() {
   const [prices, setPrices] = useState({});
   const navigate = useNavigate();
 
-  // 2. Токены + локальные иконки
+  // Токены с абсолютными путями к иконкам в public/icons
   const tokens = [
-    { symbol: 'ETH', name: 'Ethereum', icon: ETHIcon },
-    { symbol: 'USDT', name: 'Tether USD', icon: USDTIcon },
-    { symbol: 'BTC', name: 'Bitcoin', icon: BTCIcon },
-    { symbol: 'SHIBA', name: 'Shiba Inu', icon: SHIBAIcon },
-    { symbol: 'APH', name: 'Aphelion Token', icon: APHIcon },
+    { symbol: 'ETH', name: 'Ethereum', icon: '/icons/ETH.png' },
+    { symbol: 'USDT', name: 'Tether USD', icon: '/icons/USDT.png' },
+    { symbol: 'BTC', name: 'Bitcoin', icon: '/icons/BTC.png' },
+    { symbol: 'SHIBA', name: 'Shiba Inu', icon: '/icons/SHIBA.png' },
+    { symbol: 'APH', name: 'Aphelion Token', icon: '/icons/APH.png' },
   ];
 
   // Получение транзакций
@@ -49,7 +36,6 @@ function WalletPage() {
     const userId = localStorage.getItem('user_id');
     if (!userId) return;
     try {
-      // Здесь уже должно быть: `${import.meta.env.VITE_API_URL}`
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${userId}`);
       setTransactions(res.data);
     } catch (err) {
@@ -95,7 +81,6 @@ function WalletPage() {
         if (id && res.data[id]) {
           finalPrices[symbol] = res.data[id].usd;
         } else if (symbol === 'APH') {
-          // Фиксированная цена, если нет на CoinGecko
           finalPrices[symbol] = 0.2;
         }
       }
@@ -113,7 +98,6 @@ function WalletPage() {
       return;
     }
     setMnemonic(savedMnemonic);
-
     try {
       const wallet = ethers.Wallet.fromPhrase(savedMnemonic);
       setWalletAddress(wallet.address);
@@ -121,7 +105,6 @@ function WalletPage() {
       console.error('Ошибка создания кошелька:', error);
       navigate('/');
     }
-
     axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic: savedMnemonic })
       .then(res => {
         const userId = res.data.id;
@@ -135,7 +118,7 @@ function WalletPage() {
       });
   }, [navigate]);
 
-  // Периодическое обновление (балансы, транзакции)
+  // Периодическое обновление балансов и транзакций
   useEffect(() => {
     const interval = setInterval(() => {
       fetchBalances();
@@ -149,31 +132,32 @@ function WalletPage() {
     fetchTokenPrices();
   }, []);
 
-  // Фильтр транзакций
+  // Фильтрация транзакций
   const filteredTransactions =
     selectedToken === 'ALL'
       ? transactions
       : transactions.filter((tx) => tx.token === selectedToken);
 
-  // Выход
+  // Выход из кошелька
   const logout = () => {
     localStorage.removeItem('mnemonic');
     localStorage.removeItem('user_id');
     navigate('/');
   };
 
-  // Обновление локального состояния балансов
+  // Обновление балансов в локальном состоянии
   const updateBalances = (updated) => {
     setTokenBalances(updated);
     localStorage.setItem('balances', JSON.stringify(updated));
   };
 
-  // Открыть/закрыть модалки
+  // Модалки для получения и отправки
   const openReceiveModal = (token) => {
     setTimeout(() => {
       setReceiveModal({ open: true, token });
     }, 200);
   };
+
   const closeReceiveModal = () => {
     setReceiveModal({ open: false, token: null });
   };
@@ -186,6 +170,7 @@ function WalletPage() {
       setAmount('');
     }, 200);
   };
+
   const closeSendModal = () => {
     setSendModal({ open: false, token: null });
     setSendStep(0);
@@ -202,7 +187,6 @@ function WalletPage() {
       status,
       date: new Date().toISOString(),
     };
-
     const userId = localStorage.getItem('user_id');
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/transaction`, {
@@ -227,12 +211,10 @@ function WalletPage() {
     const priceAPH = prices.APH;
     const parsedAmount = parseFloat(amount);
     const valueUSD = parsedAmount * price;
-    const commissionUSD = valueUSD * 0.08; // допустим 8% комиссия
+    const commissionUSD = valueUSD * 0.08;
     const commissionAPH = commissionUSD / priceAPH;
     setCommission(commissionAPH);
-
     if (sendStep === 0) {
-      // Проверки
       if (!recipientAddress || !isAddress(recipientAddress)) {
         alert('Введите корректный адрес');
         return;
@@ -260,7 +242,6 @@ function WalletPage() {
         }
       }, 1500);
     } else if (sendStep === 1) {
-      // Списываем монеты
       const updated = { ...tokenBalances };
       updated[tokenSymbol] -= parsedAmount;
       if (tokenSymbol !== 'APH') {
@@ -288,15 +269,15 @@ function WalletPage() {
         fontFamily: 'Segoe UI, Helvetica, sans-serif',
         maxWidth: '1000px',
         margin: '0 auto',
-        position: 'relative', // чтобы позиционировать заголовок
+        position: 'relative',
       }}
     >
-      {/* 3. Заголовок слева вверху */}
+      {/* Заголовок в левом верхнем углу */}
       <h1
         style={{
           position: 'absolute',
           top: '20px',
-          left: '20px', // Ставим в левый угол
+          left: '20px',
           fontFamily: "'Orbitron', sans-serif",
           fontSize: '38px',
           color: '#0ff',
@@ -308,7 +289,7 @@ function WalletPage() {
         Aphelion Wallet
       </h1>
 
-      {/* Анимация для неонового заголовка */}
+      {/* Анимация для заголовка */}
       <style>{`
         @keyframes glow {
           0% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff; }
@@ -384,7 +365,7 @@ function WalletPage() {
         </p>
       </div>
 
-      {/* Сетка монет с иконками */}
+      {/* Сетка монет */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {tokens.map((token) => (
           <div
@@ -402,7 +383,7 @@ function WalletPage() {
             }}
           >
             <div>
-              {/* 4. Иконка монеты */}
+              {/* Иконка и название */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <img
                   src={token.icon}
@@ -716,9 +697,7 @@ function WalletPage() {
                 </div>
               </>
             )}
-            {loading && (
-              <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>
-            )}
+            {loading && <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>}
           </div>
         </div>
       )}
