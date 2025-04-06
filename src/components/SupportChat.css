@@ -1,0 +1,525 @@
+.floating-chat {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+  }
+  
+  .chat-toggle {
+    background: white;
+    color: black;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    animation: pulse 2s infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  @keyframes pulse {
+    0% { box-shadow: 0 0 5px cyan; }
+    50% { box-shadow: 0 0 20px cyan; }
+    100% { box-shadow: 0 0 5px cyan; }
+  }
+  
+  .chat-box {
+    width: 320px;
+    height: 400px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid cyan;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 0 20px cyan;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  
+  .chat-header {
+    background: cyan;
+    color: black;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .close-btn {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    color: white;
+    font-size: 14px;
+  }
+  
+  .chat-message {
+    margin-bottom: 8px;
+  }
+  
+  .chat-message.user {
+    text-align: right;
+    color: cyan;
+  }
+  
+  .chat-message.bot {
+    text-align: left;
+    color: #bbb;
+  }
+  
+  .chat-input {
+    display: flex;
+    padding: 8px;
+    border-top: 1px solid #333;
+    background: #111;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 8px;
+    outline: none;
+  }
+  
+  .chat-input button {
+    background: cyan;
+    color: black;
+    font-weight: bold;
+    border: none;
+    margin-left: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .chat-toggle {
+    background: white;
+    color: black;
+    font-size: 24px;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    animation: pulse 2s infinite;
+  }
+  .chat-toggle {
+    background: white;
+    color: black;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 26px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    cursor: grab;
+    animation: pulse 2s infinite;
+    z-index: 9999;
+  }@keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 8px cyan;
+    }
+    50% {
+      box-shadow: 0 0 20px cyan, 0 0 30px rgba(0, 255, 255, 0.6);
+    }
+  }
+  
+  .chat-toggle.notify {
+    animation: pulse-glow 1.5s infinite;
+  }
+  .chat-message.bot i {
+    color: #999;
+    font-style: italic;
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  .chat-box {
+    transition: top 0.2s ease, left 0.2s ease;
+  }  
+  .page-title {
+    font-size: 2.4rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #0ff;
+    text-shadow: 0 0 10px #00ffff;
+  }
+  .user-info {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid cyan;
+  }
+  
+  .logout-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid cyan;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .logout-btn:hover {
+    background: cyan;
+    color: black;
+  }
+  .support-chat {
+    position: fixed;
+    left: 20px;
+    bottom: 50%;
+    transform: translateY(50%);
+    z-index: 1000;
+  }
+  
+  .support-button {
+    background-color: #00c9ff;
+    border: none;
+    border-radius: 50%;
+    width: 58px;
+    height: 58px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 201, 255, 0.6);
+    transition: transform 0.3s ease;
+  }
+  
+  .support-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .chat-window {
+    position: absolute;
+    left: 70px;
+    bottom: 0;
+    width: 280px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    transform-origin: bottom left;
+  }
+  
+  .chat-window.open {
+    max-height: 400px;
+    opacity: 1;
+  }
+  
+  .chat-header {
+    background: #00c9ff;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  .chat-body {
+    padding: 15px;
+    color: #333;
+  }
+  .support-chat {
+    position: fixed;
+    left: 40px;         /* ← Подвинул правее (было 20px) */
+    bottom: 40%;        /* ↓ Подвинул ниже (было 50%) */
+    transform: translateY(50%);
+    z-index: 999;
+  }
+  
+  .support-button {
+    background: #00c9ff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+    box-shadow: 0 0 12px rgba(0, 201, 255, 0.7);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .support-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .chat-window {
+    position: absolute;
+    left: 70px;
+    bottom: 0;
+    width: 280px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .chat-window.open {
+    max-height: 300px;
+    opacity: 1;
+  }
+  
+  .chat-header {
+    background: #00c9ff;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  .chat-body {
+    padding: 15px;
+    color: #333;
+  }
+    /* --- Общая кнопка чата --- */
+.support-chat {
+    position: fixed;
+    left: 40px;
+    bottom: 40%;
+    transform: translateY(50%);
+    z-index: 9999;
+  }
+  
+  .support-button {
+    background-color: #00c9ff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 201, 255, 0.7);
+    transition: transform 0.3s ease;
+  }
+  
+  .support-button:hover {
+    transform: scale(1.1);
+  }
+  
+  /* --- Окно чата --- */
+  .chat-window {
+    position: absolute;
+    left: 70px;
+    bottom: 0;
+    width: 280px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transform-origin: bottom left;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  
+  .chat-window.open {
+    max-height: 400px;
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+  
+  .chat-header {
+    background: #00c9ff;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .chat-body {
+    padding: 15px;
+    color: #333;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  /* --- Анимация подсветки --- */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 8px cyan;
+    }
+    50% {
+      box-shadow: 0 0 20px cyan, 0 0 30px rgba(0, 255, 255, 0.6);
+    }
+  }
+  
+  .support-button.notify {
+    animation: pulse-glow 1.5s infinite;
+  }
+  /* Плавающая кнопка */
+.chat-toggle {
+    position: fixed;
+    bottom: 40px;
+    left: 40px;
+    z-index: 9999;
+    background: white;
+    color: black;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 26px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+  }
+  
+  /* Анимация пульсации */
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 5px cyan; }
+    50%  { box-shadow: 0 0 20px cyan; }
+    100% { box-shadow: 0 0 5px cyan; }
+  }
+  
+  .chat-toggle.notify {
+    animation: pulse-glow 1.5s infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 8px cyan; }
+    50%      { box-shadow: 0 0 20px cyan, 0 0 30px rgba(0, 255, 255, 0.6); }
+  }
+  
+  /* Окно чата */
+  .chat-box {
+    position: fixed;
+    width: 320px;
+    height: 400px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid cyan;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px cyan;
+    animation: slideUp 0.25s ease;
+    z-index: 9999;
+  }
+  
+  /* Анимация появления вверх */
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+  }
+  
+  /* Заголовок чата */
+  .chat-header {
+    background: cyan;
+    color: black;
+    padding: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+  }
+  
+  /* Кнопка закрытия */
+  .close-btn {
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* Основная часть */
+  .chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    color: white;
+    font-size: 14px;
+  }
+  
+  /* Сообщения */
+  .chat-message {
+    margin-bottom: 8px;
+  }
+  
+  .chat-message.user {
+    text-align: right;
+    color: #0ff;
+  }
+  
+  .chat-message.bot {
+    text-align: left;
+    color: #ccc;
+  }
+  
+  /* Анимация "Печатает..." */
+  .chat-message.bot i {
+    font-style: italic;
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 0.3; }
+    50%      { opacity: 1; }
+  }
+  
+  /* Ввод и отправка */
+  .chat-input {
+    display: flex;
+    padding: 8px;
+    border-top: 1px solid #333;
+    background: #111;
+  }
+  
+  .chat-input input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 8px;
+    outline: none;
+    font-size: 14px;
+  }
+  
+  .chat-input button {
+    background: cyan;
+    color: black;
+    font-weight: bold;
+    border: none;
+    margin-left: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  
+  .chat-input button:hover {
+    background: #00eaff;
+  }
+  
+  

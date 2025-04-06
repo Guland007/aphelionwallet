@@ -1,0 +1,94 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    background: #0b0c1d;
+    overflow: hidden;
+  }
+  
+  .landing-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .star-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black url('/stars.gif') repeat;
+    background-size: cover;
+    animation: scrollStars 60s linear infinite;
+    z-index: -1;
+  }
+  
+  @keyframes scrollStars {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 1000px; }
+  }
+  
+  .landing-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #00eaff;
+    text-shadow: 0 0 12px #00eaff;
+  }
+  
+  .header-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .glow-btn {
+    padding: 10px 20px;
+    border: none;
+    background: #00eaff;
+    color: #000;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px #00eaff;
+  }
+  
+  .glow-btn:hover {
+    background: white;
+    box-shadow: 0 0 20px #00eaff;
+  }
+  
+  .landing-main {
+    text-align: center;
+    padding-top: 4rem;
+  }
+  
+  .wallet-img {
+    width: 240px;
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 10px #00eaff);
+  }
+  
+  .headline {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .features {
+    list-style: none;
+    padding: 0;
+    font-size: 1.1rem;
+  }
+  
+  .features li {
+    margin-bottom: 0.5rem;
+  }  
