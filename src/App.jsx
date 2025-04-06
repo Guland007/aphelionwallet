@@ -14,7 +14,7 @@ function App() {
   return (
     <LanguageProvider>
       {/* Указываем базовый путь для роутера */}
-      <Router basename="/aphelion-wallet">
+      <Router >
         <AnimatedBackground />
         <Routes>
           {/* Путь "/" соответствует "http://<домен>/aphelion-wallet/" */}
