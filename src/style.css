@@ -1,0 +1,387 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: #f8f9fb;
+  color: #222;
+}
+
+input, button {
+  font-family: inherit;
+}
+
+button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #3c7ecb;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0f0f1a 0%, #050510 100%);
+}
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ====== ПУЛЬСАЦИЯ ФОНА ====== */
+body {
+  animation: pulse-bg 10s ease-in-out infinite;
+}
+
+@keyframes pulse-bg {
+  0%, 100% {
+    background-color: #0f0f1a;
+  }
+  50% {
+    background-color: #11111f;
+  }
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #0f0f1a 0%, #050510 100%);
+  /* animation добавится автоматически сверху */
+}
+/* ===== СКАНИРУЮЩИЙ ЛУЧ ===== */
+.scan-line {
+  position: fixed;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 255, 255, 0.05) 50%, transparent 100%);
+  animation: scan 12s linear infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% {
+    top: -100%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 80%);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Заголовок */
+.page-title {
+  font-size: 2.4rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #0ff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+/* Аватар и кнопка */
+.user-info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid cyan;
+}
+
+.logout-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid cyan;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: cyan;
+  color: black;
+}
+
+/* Анимация карточек */
+.token-card {
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Футер */
+.footer {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  margin-top: 40px;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid cyan;
+  box-shadow: 0 0 10px cyan;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+}
+.wallet-footer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 60px;
+  padding-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-btn {
+  background-color: cyan;
+  border: none;
+  color: black;
+  padding: 12px 24px;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px cyan;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-btn:hover {
+  background-color: #00ffff;
+  box-shadow: 0 0 20px cyan;
+  transform: scale(1.05);
+}
+.wallet-footer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 60px;
+  padding-bottom: 60px;
+  flex-wrap: wrap;
+}
+
+.footer-btn {
+  background-color: cyan;
+  border: none;
+  color: black;
+  padding: 12px 24px;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px cyan;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.footer-btn:hover {
+  transform: scale(1.05);
+  background-color: #00f0f0;
+  box-shadow: 0 0 20px cyan;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #0f0f1a;
+}
+.wallet-footer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.footer-btn {
+  background: linear-gradient(135deg, #00f0ff, #0fffc1);
+  color: #000;
+  border: none;
+  padding: 12px 20px;
+  font-weight: bold;
+  border-radius: 12px;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.footer-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
+/* Общие переменные для цветов и шрифтов */
+:root {
+  --primary-color: #6c63ff;
+  --secondary-color: #ab47bc;
+  --text-color: #fff;
+  --bg-color: #0d1117;
+  --input-bg: #161b22;
+  --input-border: #30363d;
+  --transition-speed: 0.3s;
+}
+
+/* Общие стили для кнопок */
+.footer-btn,
+.button {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-color);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Эффекты при наведении для кнопок */
+.footer-btn:hover,
+.button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
+}
+
+/* Эффект при клике */
+.footer-btn:active,
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+}
+
+/* Дополнительный эффект: вспышка */
+.footer-btn::before,
+.button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 10%);
+  background-position: center;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.4s ease;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.footer-btn:hover::before,
+.button:hover::before {
+  transform: translate(-50%, -50%) scale(2.5);
+}
+
+/* Стили для форм/полей ввода */
+.input-field {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.5);
+}
+
+/* Стили для лейблов */
+.label {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* Пример контейнера для формы */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Пример адаптивного контейнера */
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: var(--bg-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+

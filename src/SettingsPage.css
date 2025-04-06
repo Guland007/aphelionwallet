@@ -1,0 +1,173 @@
+/* Общий контейнер страницы */
+.settings-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background: transparent; /* или #0d1117, если нужен сплошной фон */
+    padding: 2rem;
+  }
+  
+  /* Карточка с настройками */
+  .settings-card {
+    background-color: #1e1e1e;
+    max-width: 500px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+  }
+  
+  /* Заголовок */
+  .settings-title {
+    font-size: 24px;
+    margin-bottom: 1rem;
+    color: #00d8ff; /* Акцентный цвет */
+    text-align: center;
+  }
+  
+  /* Уведомления */
+  .notification {
+    background: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  /* Группы полей */
+  .form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Подписи */
+  .label {
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+    color: #aaa;
+  }
+  
+  /* Поля ввода */
+  .input-field {
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    transition: border 0.2s ease;
+  }
+  
+  /* Кнопки */
+  .primary-button,
+  .secondary-button,
+  .danger-button {
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  /* Основная (синяя) кнопка */
+  .primary-button {
+    background: linear-gradient(135deg, #6c63ff, #ab47bc);
+    color: #fff;
+  }
+  
+  .primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+  }
+  
+  /* Вспомогательная (серый фон) */
+  .secondary-button {
+    background: #2f2f2f;
+    color: #fff;
+  }
+  
+  .secondary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(47,47,47,0.3);
+  }
+  
+  /* Опасная (красная) кнопка */
+  .danger-button {
+    background-color: tomato;
+    color: #fff;
+  }
+  
+  .danger-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,99,71,0.3);
+  }
+  
+  /* Разделитель */
+  .divider {
+    height: 1px;
+    background: #333;
+    margin: 1rem 0;
+    border-radius: 1px;
+  }
+  
+  /* Отображение email */
+  .email-info {
+    background: #2a2a2a;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .email-text {
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .verified {
+    color: #4caf50;
+    font-weight: bold;
+  }
+  
+  /* Блок для сид-фразы */
+  .mnemonic-box {
+    background: #2a2a2a;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    word-break: break-all;
+    border: 1px solid #333;
+  }
+  
+  /* Адаптивная верстка на мобильных */
+  @media (max-width: 600px) {
+    .settings-card {
+      padding: 1rem;
+      margin: 1rem;
+    }
+    .settings-title {
+      font-size: 20px;
+    }
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      font-size: 13px;
+      padding: 0.5rem 1rem;
+    }
+    .input-field {
+      font-size: 13px;
+    }
+  }
+  
