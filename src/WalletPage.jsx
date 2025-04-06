@@ -22,7 +22,7 @@ function WalletPage() {
   const [prices, setPrices] = useState({});
   const navigate = useNavigate();
 
-  // Токены с абсолютными путями к иконкам в public/icons
+  // Массив токенов с абсолютными путями к иконкам (папка public/icons)
   const tokens = [
     { symbol: 'ETH', name: 'Ethereum', icon: '/icons/ETH.png' },
     { symbol: 'USDT', name: 'Tether USD', icon: '/icons/USDT.png' },
@@ -118,7 +118,7 @@ function WalletPage() {
       });
   }, [navigate]);
 
-  // Периодическое обновление балансов и транзакций
+  // Периодическое обновление (балансы и транзакции)
   useEffect(() => {
     const interval = setInterval(() => {
       fetchBalances();
@@ -145,7 +145,7 @@ function WalletPage() {
     navigate('/');
   };
 
-  // Обновление балансов в локальном состоянии
+  // Обновление локального состояния балансов
   const updateBalances = (updated) => {
     setTokenBalances(updated);
     localStorage.setItem('balances', JSON.stringify(updated));
@@ -157,11 +157,9 @@ function WalletPage() {
       setReceiveModal({ open: true, token });
     }, 200);
   };
-
   const closeReceiveModal = () => {
     setReceiveModal({ open: false, token: null });
   };
-
   const openSendModal = (token) => {
     setTimeout(() => {
       setSendModal({ open: true, token });
@@ -170,7 +168,6 @@ function WalletPage() {
       setAmount('');
     }, 200);
   };
-
   const closeSendModal = () => {
     setSendModal({ open: false, token: null });
     setSendStep(0);
@@ -272,8 +269,9 @@ function WalletPage() {
         position: 'relative',
       }}
     >
-      {/* Заголовок в левом верхнем углу */}
+      {/* Заголовок с анимацией при наведении */}
       <h1
+        className="wallet-header"
         style={{
           position: 'absolute',
           top: '20px',
@@ -284,13 +282,17 @@ function WalletPage() {
           textShadow: '0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff',
           margin: 0,
           animation: 'glow 2s ease-in-out infinite alternate',
+          transition: 'transform 0.3s ease',
         }}
       >
         Aphelion Wallet
       </h1>
 
-      {/* Анимация для заголовка */}
+      {/* Анимация для заголовка (hover эффект) */}
       <style>{`
+        .wallet-header:hover {
+          transform: scale(1.1);
+        }
         @keyframes glow {
           0% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff; }
           100% { text-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
@@ -478,13 +480,7 @@ function WalletPage() {
               textAlign: 'center',
             }}
           >
-            <h3
-              style={{
-                marginBottom: '15px',
-                color: '#000',
-                fontSize: '20px',
-              }}
-            >
+            <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
               Получение {receiveModal.token.symbol}
             </h3>
             <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>
@@ -541,13 +537,7 @@ function WalletPage() {
           >
             {sendStep === 0 && (
               <>
-                <h3
-                  style={{
-                    marginBottom: '15px',
-                    color: '#000',
-                    fontSize: '20px',
-                  }}
-                >
+                <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
                   Отправка {sendModal.token.symbol}
                 </h3>
                 <input
@@ -583,14 +573,7 @@ function WalletPage() {
                     Комиссия: {commission.toFixed(4)} APH
                   </p>
                 )}
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginTop: '20px',
-                    gap: '12px',
-                  }}
-                >
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', gap: '12px' }}>
                   <button
                     onClick={handleSend}
                     style={{
@@ -606,12 +589,8 @@ function WalletPage() {
                       boxShadow: '0 4px 12px rgba(31, 111, 235, 0.3)',
                       transition: 'background 0.2s ease',
                     }}
-                    onMouseOver={(e) =>
-                      (e.target.style.backgroundColor = '#0f5ed9')
-                    }
-                    onMouseOut={(e) =>
-                      (e.target.style.backgroundColor = '#1f6feb')
-                    }
+                    onMouseOver={(e) => (e.target.style.backgroundColor = '#0f5ed9')}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = '#1f6feb')}
                   >
                     Отправить
                   </button>
@@ -630,12 +609,8 @@ function WalletPage() {
                       boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                       transition: 'background 0.2s ease',
                     }}
-                    onMouseOver={(e) =>
-                      (e.target.style.backgroundColor = '#e0e0e0')
-                    }
-                    onMouseOut={(e) =>
-                      (e.target.style.backgroundColor = '#f2f2f2')
-                    }
+                    onMouseOver={(e) => (e.target.style.backgroundColor = '#e0e0e0')}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = '#f2f2f2')}
                   >
                     Отмена
                   </button>
@@ -647,13 +622,7 @@ function WalletPage() {
                 <p style={{ fontSize: '16px', color: '#333' }}>
                   Монеты успешно отправлены на адрес:
                 </p>
-                <code
-                  style={{
-                    wordBreak: 'break-all',
-                    fontSize: '14px',
-                    color: '#444',
-                  }}
-                >
+                <code style={{ wordBreak: 'break-all', fontSize: '14px', color: '#444' }}>
                   {lastSentAddress}
                 </code>
                 <div style={{ marginTop: '20px' }}>
@@ -721,13 +690,7 @@ function WalletPage() {
               ))}
             </select>
           </div>
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              marginTop: '10px',
-            }}
-          >
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
             <thead>
               <tr style={{ background: '#f0f0f0' }}>
                 <th style={th}>Дата</th>
@@ -740,9 +703,7 @@ function WalletPage() {
             <tbody>
               {filteredTransactions.map((tx, index) => (
                 <tr key={index} style={{ borderBottom: '1px solid #ccc' }}>
-                  <td style={td}>
-                    {tx.date ? new Date(tx.date).toLocaleString() : '—'}
-                  </td>
+                  <td style={td}>{tx.date ? new Date(tx.date).toLocaleString() : '—'}</td>
                   <td style={td}>{tx.token}</td>
                   <td style={td}>{tx.amount}</td>
                   <td style={td}>{tx.to_address}</td>
@@ -777,10 +738,7 @@ function WalletPage() {
         </button>
       </div>
 
-      <footer
-        className="footer"
-        style={{ marginTop: '2rem', textAlign: 'center' }}
-      >
+      <footer className="footer" style={{ marginTop: '2rem', textAlign: 'center' }}>
         © 2025 Aphelion Wallet | Все права защищены
       </footer>
     </div>
