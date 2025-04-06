@@ -4,11 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // 1. Импорт иконок (пример, если папка icons лежит рядом)
-import ETHIcon from '<div styleName={styles.dist}></div>/icons/ETH.png';
-import USDTIcon from '<div styleName={styles.dist}></div>/icons/USDT.png';
-import BTCIcon from '<div styleName={styles.dist}></div>/icons/BTC.png';
-import SHIBAIcon from '<div styleName={styles.dist}></div>/icons/SHIBA.png';
-import APHIcon from '<div styleName={styles.dis}></div>/icons/APH.png';
+import React from 'react';
+
+function WalletPage() {
+  const tokens = [
+    { symbol: 'ETH', name: 'Ethereum', icon: '/icons/ETH.png' },
+    { symbol: 'USDT', name: 'Tether USD', icon: '/icons/USDT.png' },
+    { symbol: 'BTC', name: 'Bitcoin', icon: '/icons/BTC.png' },
+    { symbol: 'SHIBA', name: 'Shiba Inu', icon: '/icons/SHIBA.png' },
+    { symbol: 'APH', name: 'Aphelion Token', icon: '/icons/APH.png' }
+  ];  }
+
 
 function WalletPage() {
   const [mnemonic, setMnemonic] = useState('');
