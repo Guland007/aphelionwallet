@@ -41,8 +41,8 @@ function AdminPage() {
     setLoading(true);
     try {
       const [balRes, txRes] = await Promise.all([
-        axios.get(`http://localhost:3001/api/balances/${user.id}`),
-        axios.get(`http://localhost:3001/api/transactions/${user.id}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/balances/${user.id}`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${user.id}`)
       ]);
       const balMap = {};
       const addrMap = {};

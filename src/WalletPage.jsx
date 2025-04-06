@@ -3,6 +3,13 @@ import { ethers, isAddress } from 'ethers';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// 1. Импорт иконок (пример, если папка icons лежит рядом)
+import ETHIcon from '<div styleName={styles.dist}></div>/icons/ETH.png';
+import USDTIcon from '<div styleName={styles.dist}></div>/icons/USDT.png';
+import BTCIcon from '<div styleName={styles.dist}></div>/icons/BTC.png';
+import SHIBAIcon from '<div styleName={styles.dist}></div>/icons/SHIBA.png';
+import APHIcon from '<div styleName={styles.dis}></div>/icons/APH.png';
+
 function WalletPage() {
   const [mnemonic, setMnemonic] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
@@ -22,12 +29,13 @@ function WalletPage() {
   const [prices, setPrices] = useState({});
   const navigate = useNavigate();
 
+  // 2. Токены + локальные иконки
   const tokens = [
-    { symbol: 'ETH', name: 'Ethereum' },
-    { symbol: 'USDT', name: 'Tether USD' },
-    { symbol: 'BTC', name: 'Bitcoin' },
-    { symbol: 'SHIBA', name: 'Shiba Inu' },
-    { symbol: 'APH', name: 'Aphelion Token' },
+    { symbol: 'ETH', name: 'Ethereum', icon: ETHIcon },
+    { symbol: 'USDT', name: 'Tether USD', icon: USDTIcon },
+    { symbol: 'BTC', name: 'Bitcoin', icon: BTCIcon },
+    { symbol: 'SHIBA', name: 'Shiba Inu', icon: SHIBAIcon },
+    { symbol: 'APH', name: 'Aphelion Token', icon: APHIcon },
   ];
 
   // Получение транзакций
@@ -35,7 +43,8 @@ function WalletPage() {
     const userId = localStorage.getItem('user_id');
     if (!userId) return;
     try {
-      const res = await axios.get(`http://localhost:3001/api/transactions/${userId}`);
+      // Здесь уже должно быть: `${import.meta.env.VITE_API_URL}`
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${userId}`);
       setTransactions(res.data);
     } catch (err) {
       console.error('Ошибка загрузки транзакций:', err);
@@ -47,7 +56,7 @@ function WalletPage() {
     const userId = localStorage.getItem('user_id');
     if (!userId) return;
     try {
-      const res = await axios.get(`http://localhost:3001/api/balances/${userId}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/balances/${userId}`);
       const balancesObj = {};
       res.data.forEach(({ token, amount }) => {
         balancesObj[token] = amount;
@@ -80,7 +89,8 @@ function WalletPage() {
         if (id && res.data[id]) {
           finalPrices[symbol] = res.data[id].usd;
         } else if (symbol === 'APH') {
-          finalPrices[symbol] = 0.2; // фиксированная цена
+          // Фиксированная цена, если нет на CoinGecko
+          finalPrices[symbol] = 0.2;
         }
       }
       setPrices(finalPrices);
@@ -97,6 +107,7 @@ function WalletPage() {
       return;
     }
     setMnemonic(savedMnemonic);
+
     try {
       const wallet = ethers.Wallet.fromPhrase(savedMnemonic);
       setWalletAddress(wallet.address);
@@ -118,7 +129,7 @@ function WalletPage() {
       });
   }, [navigate]);
 
-  // Периодическое обновление
+  // Периодическое обновление (балансы, транзакции)
   useEffect(() => {
     const interval = setInterval(() => {
       fetchBalances();
@@ -151,13 +162,12 @@ function WalletPage() {
     localStorage.setItem('balances', JSON.stringify(updated));
   };
 
-  // Модалки
+  // Открыть/закрыть модалки
   const openReceiveModal = (token) => {
     setTimeout(() => {
       setReceiveModal({ open: true, token });
     }, 200);
   };
-
   const closeReceiveModal = () => {
     setReceiveModal({ open: false, token: null });
   };
@@ -170,7 +180,6 @@ function WalletPage() {
       setAmount('');
     }, 200);
   };
-
   const closeSendModal = () => {
     setSendModal({ open: false, token: null });
     setSendStep(0);
@@ -178,7 +187,7 @@ function WalletPage() {
     setConfirmationModal(false);
   };
 
-  // Добавление транзакции на сервер
+  // Создание транзакции
   const addTransaction = async (status) => {
     const newTx = {
       token: sendModal.token.symbol,
@@ -203,7 +212,7 @@ function WalletPage() {
     }
   };
 
-  // Отправка токенов
+  // Логика отправки токенов
   const handleSend = () => {
     const tokenSymbol = sendModal.token.symbol;
     const userBalance = tokenBalances[tokenSymbol] || 0;
@@ -212,11 +221,12 @@ function WalletPage() {
     const priceAPH = prices.APH;
     const parsedAmount = parseFloat(amount);
     const valueUSD = parsedAmount * price;
-    const commissionUSD = valueUSD * 0.08;
+    const commissionUSD = valueUSD * 0.08; // допустим 8% комиссия
     const commissionAPH = commissionUSD / priceAPH;
     setCommission(commissionAPH);
 
     if (sendStep === 0) {
+      // Проверки
       if (!recipientAddress || !isAddress(recipientAddress)) {
         alert('Введите корректный адрес');
         return;
@@ -244,6 +254,7 @@ function WalletPage() {
         }
       }, 1500);
     } else if (sendStep === 1) {
+      // Списываем монеты
       const updated = { ...tokenBalances };
       updated[tokenSymbol] -= parsedAmount;
       if (tokenSymbol !== 'APH') {
@@ -265,20 +276,29 @@ function WalletPage() {
   const td = { padding: '10px' };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Segoe UI, Helvetica, sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
-      
-      {/* Заголовок Aphelion Wallet в правом верхнем углу */}
-      <h1 style={{
-        position: 'absolute',
-        top: '20px',
-        right: '20px',
-        fontFamily: "'Orbitron', sans-serif",
-        fontSize: '38px',
-        color: '#0ff',
-        textShadow: '0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff',
-        margin: 0,
-        animation: 'glow 2s ease-in-out infinite alternate'
-      }}>
+    <div
+      style={{
+        padding: '2rem',
+        fontFamily: 'Segoe UI, Helvetica, sans-serif',
+        maxWidth: '1000px',
+        margin: '0 auto',
+        position: 'relative', // чтобы позиционировать заголовок
+      }}
+    >
+      {/* 3. Заголовок слева вверху */}
+      <h1
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px', // Ставим в левый угол
+          fontFamily: "'Orbitron', sans-serif",
+          fontSize: '38px',
+          color: '#0ff',
+          textShadow: '0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff',
+          margin: 0,
+          animation: 'glow 2s ease-in-out infinite alternate',
+        }}
+      >
         Aphelion Wallet
       </h1>
 
@@ -291,11 +311,24 @@ function WalletPage() {
       `}</style>
 
       {/* Блок с аватаром и кнопкой "Выйти" */}
-      <div className="user-info" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginTop: '80px' }}>
+      <div
+        className="user-info"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          marginTop: '80px',
+        }}
+      >
         <img
           src="/avatar.png"
           alt="User"
-          style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }}
+          style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            marginRight: '10px',
+          }}
         />
         <button
           style={{
@@ -305,7 +338,7 @@ function WalletPage() {
             border: 'none',
             borderRadius: '8px',
             cursor: 'pointer',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
           onClick={logout}
         >
@@ -314,24 +347,38 @@ function WalletPage() {
       </div>
 
       <h2 style={{ marginTop: '2rem' }}>Ваши активы</h2>
-      <div style={{
-        backgroundColor: '#1e1e1e',
-        padding: '16px 24px',
-        borderRadius: '12px',
-        marginBottom: '1.5rem',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-        maxWidth: '300px',
-        color: '#fff'
-      }}>
+      <div
+        style={{
+          backgroundColor: '#1e1e1e',
+          padding: '16px 24px',
+          borderRadius: '12px',
+          marginBottom: '1.5rem',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+          maxWidth: '300px',
+          color: '#fff',
+        }}
+      >
         <p style={{ margin: 0, fontSize: '16px', color: '#aaa' }}>Total Balance</p>
-        <p style={{ margin: 0, fontSize: '22px', fontWeight: 'bold', color: '#00d8ff' }}>
-          ${Object.entries(tokenBalances).reduce((total, [symbol, amount]) => {
-            const price = prices[symbol] || 0;
-            return total + amount * price;
-          }, 0).toFixed(2)} USDT
+        <p
+          style={{
+            margin: 0,
+            fontSize: '22px',
+            fontWeight: 'bold',
+            color: '#00d8ff',
+          }}
+        >
+          $
+          {Object.entries(tokenBalances)
+            .reduce((total, [symbol, amt]) => {
+              const price = prices[symbol] || 0;
+              return total + amt * price;
+            }, 0)
+            .toFixed(2)}{' '}
+          USDT
         </p>
       </div>
 
+      {/* Сетка монет с иконками */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         {tokens.map((token) => (
           <div
@@ -349,10 +396,33 @@ function WalletPage() {
             }}
           >
             <div>
-              <h3 style={{ fontSize: '22px', fontWeight: 'bold', color: '#00d8ff', marginBottom: '4px' }}>
-                {token.symbol}
-              </h3>
-              <p style={{ fontSize: '14px', color: '#aaa', marginBottom: '12px' }}>
+              {/* 4. Иконка монеты */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <img
+                  src={token.icon}
+                  alt={token.symbol}
+                  style={{ width: '32px', height: '32px' }}
+                />
+                <h3
+                  style={{
+                    fontSize: '22px',
+                    fontWeight: 'bold',
+                    color: '#00d8ff',
+                    marginBottom: '4px',
+                    marginTop: 0,
+                  }}
+                >
+                  {token.symbol}
+                </h3>
+              </div>
+              <p
+                style={{
+                  fontSize: '14px',
+                  color: '#aaa',
+                  marginBottom: '12px',
+                  marginTop: '4px',
+                }}
+              >
                 {token.name}
               </p>
               <p style={{ fontSize: '18px', fontWeight: 'bold' }}>
@@ -395,6 +465,7 @@ function WalletPage() {
         ))}
       </div>
 
+      {/* Модалка "Получить" */}
       {receiveModal.open && (
         <div
           onClick={closeReceiveModal}
@@ -420,10 +491,18 @@ function WalletPage() {
               textAlign: 'center',
             }}
           >
-            <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
+            <h3
+              style={{
+                marginBottom: '15px',
+                color: '#000',
+                fontSize: '20px',
+              }}
+            >
               Получение {receiveModal.token.symbol}
             </h3>
-            <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>Ваш адрес:</p>
+            <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>
+              Ваш адрес:
+            </p>
             <code style={{ fontSize: '13px', wordBreak: 'break-all', color: '#444' }}>
               {walletAddress}
             </code>
@@ -447,6 +526,7 @@ function WalletPage() {
         </div>
       )}
 
+      {/* Модалка "Отправить" */}
       {sendModal.open && (
         <div
           onClick={closeSendModal}
@@ -474,7 +554,13 @@ function WalletPage() {
           >
             {sendStep === 0 && (
               <>
-                <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
+                <h3
+                  style={{
+                    marginBottom: '15px',
+                    color: '#000',
+                    fontSize: '20px',
+                  }}
+                >
                   Отправка {sendModal.token.symbol}
                 </h3>
                 <input
@@ -510,12 +596,14 @@ function WalletPage() {
                     Комиссия: {commission.toFixed(4)} APH
                   </p>
                 )}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: '20px',
-                  gap: '12px',
-                }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginTop: '20px',
+                    gap: '12px',
+                  }}
+                >
                   <button
                     onClick={handleSend}
                     style={{
@@ -531,8 +619,12 @@ function WalletPage() {
                       boxShadow: '0 4px 12px rgba(31, 111, 235, 0.3)',
                       transition: 'background 0.2s ease',
                     }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = '#0f5ed9')}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = '#1f6feb')}
+                    onMouseOver={(e) =>
+                      (e.target.style.backgroundColor = '#0f5ed9')
+                    }
+                    onMouseOut={(e) =>
+                      (e.target.style.backgroundColor = '#1f6feb')
+                    }
                   >
                     Отправить
                   </button>
@@ -551,8 +643,12 @@ function WalletPage() {
                       boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                       transition: 'background 0.2s ease',
                     }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = '#e0e0e0')}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = '#f2f2f2')}
+                    onMouseOver={(e) =>
+                      (e.target.style.backgroundColor = '#e0e0e0')
+                    }
+                    onMouseOut={(e) =>
+                      (e.target.style.backgroundColor = '#f2f2f2')
+                    }
                   >
                     Отмена
                   </button>
@@ -564,7 +660,13 @@ function WalletPage() {
                 <p style={{ fontSize: '16px', color: '#333' }}>
                   Монеты успешно отправлены на адрес:
                 </p>
-                <code style={{ wordBreak: 'break-all', fontSize: '14px', color: '#444' }}>
+                <code
+                  style={{
+                    wordBreak: 'break-all',
+                    fontSize: '14px',
+                    color: '#444',
+                  }}
+                >
                   {lastSentAddress}
                 </code>
                 <div style={{ marginTop: '20px' }}>
@@ -608,11 +710,14 @@ function WalletPage() {
                 </div>
               </>
             )}
-            {loading && <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>}
+            {loading && (
+              <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>
+            )}
           </div>
         </div>
       )}
 
+      {/* История транзакций */}
       {transactions.length > 0 && (
         <div style={{ marginTop: '3rem' }}>
           <h2>История транзакций</h2>
@@ -631,7 +736,13 @@ function WalletPage() {
               ))}
             </select>
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              marginTop: '10px',
+            }}
+          >
             <thead>
               <tr style={{ background: '#f0f0f0' }}>
                 <th style={th}>Дата</th>
@@ -644,7 +755,9 @@ function WalletPage() {
             <tbody>
               {filteredTransactions.map((tx, index) => (
                 <tr key={index} style={{ borderBottom: '1px solid #ccc' }}>
-                  <td style={td}>{tx.date ? new Date(tx.date).toLocaleString() : '—'}</td>
+                  <td style={td}>
+                    {tx.date ? new Date(tx.date).toLocaleString() : '—'}
+                  </td>
                   <td style={td}>{tx.token}</td>
                   <td style={td}>{tx.amount}</td>
                   <td style={td}>{tx.to_address}</td>
@@ -656,14 +769,33 @@ function WalletPage() {
         </div>
       )}
 
-      <div className="wallet-footer-buttons" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
-        <button className="footer-btn" onClick={() => navigate('/settings')}>Настройки</button>
-        <button className="footer-btn" onClick={() => navigate('/support')}>Поддержка</button>
-        <button className="footer-btn" onClick={() => navigate('/tokens')}>О токенах</button>
-        <button className="footer-btn" onClick={() => navigate('/')}>Назад</button>
+      {/* Кнопки внизу */}
+      <div
+        className="wallet-footer-buttons"
+        style={{
+          marginTop: '2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <button className="footer-btn" onClick={() => navigate('/settings')}>
+          Настройки
+        </button>
+        <button className="footer-btn" onClick={() => navigate('/support')}>
+          Поддержка
+        </button>
+        <button className="footer-btn" onClick={() => navigate('/tokens')}>
+          О токенах
+        </button>
+        <button className="footer-btn" onClick={() => navigate('/')}>
+          Назад
+        </button>
       </div>
 
-      <footer className="footer" style={{ marginTop: '2rem', textAlign: 'center' }}>
+      <footer
+        className="footer"
+        style={{ marginTop: '2rem', textAlign: 'center' }}
+      >
         © 2025 Aphelion Wallet | Все права защищены
       </footer>
     </div>
@@ -671,4 +803,3 @@ function WalletPage() {
 }
 
 export default WalletPage;
-  
