@@ -12,9 +12,20 @@ const db = new sqlite3.Database('./aphelion.db');
 // Настройка CORS: разрешаем запросы с указанных origin
 const allowedOrigins = [
   'http://localhost:3001',
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'https://aphelionwallet.info',
+  'https://www.aphelionwallet.info'
 ];
-
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST'],
