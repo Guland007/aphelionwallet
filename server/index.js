@@ -11,26 +11,25 @@ const db = new sqlite3.Database('./aphelion.db');
 
 // Настройка CORS: разрешаем запросы с указанных origin
 const allowedOrigins = [
-  '${import.meta.env.VITE_API_URL}',
   'http://localhost:5173',
   'https://aphelionwallet.info',
   'https://www.aphelionwallet.info'
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Если нет Origin (например, запрос из Postman) – разрешаем
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
     }
-    return callback(new Error('Not allowed by CORS'));
   },
   methods: ['GET', 'POST'],
   credentials: true
 }));
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
+
 app.use(bodyParser.json());
 
 // Главная страница (проверка работы сервера)

@@ -39,8 +39,8 @@ function SeedLogin() {
       const user = res.data;
 
       // Сохраняем данные в localStorage
-      localStorage.setItem('user_id', user.id);
-      localStorage.setItem('mnemonic', user.mnemonic);
+      localStorage.setItem('mnemonic', savedMnemonic);
+      localStorage.setItem('user_id', res.data.id);
 
       // Переход на страницу кошелька
       navigate('/wallet');
