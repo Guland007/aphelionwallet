@@ -133,6 +133,18 @@ function WalletPage() {
     fetchTokenPrices();
   }, []);
 
+  useEffect(() => {
+    const savedMnemonic = localStorage.getItem('mnemonic');
+    const savedUserId = localStorage.getItem('user_id');
+    if (!savedMnemonic || !savedUserId) {
+      // Если нет данных, перенаправляем пользователя
+      navigate('/');
+      return;
+    }
+    setMnemonic(savedMnemonic);
+    // Можно здесь установить и другие состояния, если требуется
+  }, [navigate]);
+
   // Фильтр транзакций
   const filteredTransactions =
     selectedToken === 'ALL'
