@@ -401,9 +401,10 @@ function WalletPage() {
           src={token.icon}
           alt={token.symbol}
           style={{
-            width: '40px',
-            height: '40px',
-            objectFit: 'contain' /* картинка целиком в рамках 40x40 */
+            width: '48px',
+            height: '48px',
+            objectFit: 'contain',
+            backgroundColor: '#222'
           }}
         />
                 <h3
