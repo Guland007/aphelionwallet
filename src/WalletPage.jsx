@@ -404,7 +404,7 @@ function WalletPage() {
             width: '48px',
             height: '48px',
             objectFit: 'contain',
-            backgroundColor: '#222'
+           
           }}
         />
                 <h3
