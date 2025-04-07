@@ -90,7 +90,7 @@
 
 /* Второстепенная (серая) кнопка */
 .secondary-button {
-  background: #2f2f2f;
+  background: #1f6feb;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -103,8 +103,9 @@
 
 .secondary-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(47, 47, 47, 0.3);
+  box-shadow: 0 8px 20px rgba(31, 111, 235, 0.3);
 }
+
 
 /* Адаптивность для мобильных */
 @media (max-width: 600px) {
