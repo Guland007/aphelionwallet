@@ -22,13 +22,13 @@ function WalletPage() {
   const [prices, setPrices] = useState({});
   const navigate = useNavigate();
 
-  // Массив токенов с абсолютными путями к иконкам (папка public/icons)
+  // Токены с путями к иконкам (папка public/icons)
   const tokens = [
-    { symbol: 'ETH', name: 'Ethereum', icon: '/icons/ETH.png' },
-    { symbol: 'USDT', name: 'Tether USD', icon: '/icons/USDT.png' },
-    { symbol: 'BTC', name: 'Bitcoin', icon: '/icons/BTC.png' },
-    { symbol: 'SHIBA', name: 'Shiba Inu', icon: '/icons/SHIBA.png' },
-    { symbol: 'APH', name: 'Aphelion Token', icon: '/icons/APH.png' },
+    { symbol: 'ETH', name: 'Ethereum', icon: '/icons/eth.png' },
+    { symbol: 'USDT', name: 'Tether USD', icon: '/icons/usdt.png' },
+    { symbol: 'BTC', name: 'Bitcoin', icon: '/icons/btc.png' },
+    { symbol: 'SHIBA', name: 'Shiba Inu', icon: '/icons/shiba.png' },
+    { symbol: 'APH', name: 'Aphelion Token', icon: '/icons/aph.png' },
   ];
 
   // Получение транзакций
@@ -81,7 +81,7 @@ function WalletPage() {
         if (id && res.data[id]) {
           finalPrices[symbol] = res.data[id].usd;
         } else if (symbol === 'APH') {
-          finalPrices[symbol] = 0.2;
+          finalPrices[symbol] = 0.2; // Фиксированная цена
         }
       }
       setPrices(finalPrices);
@@ -105,6 +105,7 @@ function WalletPage() {
       console.error('Ошибка создания кошелька:', error);
       navigate('/');
     }
+
     axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic: savedMnemonic })
       .then(res => {
         const userId = res.data.id;
@@ -118,7 +119,7 @@ function WalletPage() {
       });
   }, [navigate]);
 
-  // Периодическое обновление (балансы и транзакции)
+  // Периодическое обновление
   useEffect(() => {
     const interval = setInterval(() => {
       fetchBalances();
@@ -132,26 +133,26 @@ function WalletPage() {
     fetchTokenPrices();
   }, []);
 
-  // Фильтрация транзакций
+  // Фильтр транзакций
   const filteredTransactions =
     selectedToken === 'ALL'
       ? transactions
       : transactions.filter((tx) => tx.token === selectedToken);
 
-  // Выход из кошелька
+  // Выход
   const logout = () => {
     localStorage.removeItem('mnemonic');
     localStorage.removeItem('user_id');
     navigate('/');
   };
 
-  // Обновление локального состояния балансов
+  // Обновление балансов в локальном состоянии
   const updateBalances = (updated) => {
     setTokenBalances(updated);
     localStorage.setItem('balances', JSON.stringify(updated));
   };
 
-  // Модалки для получения и отправки
+  // Модалки "Получить" / "Отправить"
   const openReceiveModal = (token) => {
     setTimeout(() => {
       setReceiveModal({ open: true, token });
@@ -160,6 +161,7 @@ function WalletPage() {
   const closeReceiveModal = () => {
     setReceiveModal({ open: false, token: null });
   };
+
   const openSendModal = (token) => {
     setTimeout(() => {
       setSendModal({ open: true, token });
@@ -199,7 +201,8 @@ function WalletPage() {
     }
   };
 
-  // Логика отправки токенов
+  // Отправка токенов
+  const [loadingSend, setLoadingSend] = useState(false);
   const handleSend = () => {
     const tokenSymbol = sendModal.token.symbol;
     const userBalance = tokenBalances[tokenSymbol] || 0;
@@ -211,7 +214,9 @@ function WalletPage() {
     const commissionUSD = valueUSD * 0.08;
     const commissionAPH = commissionUSD / priceAPH;
     setCommission(commissionAPH);
+
     if (sendStep === 0) {
+      // Проверки
       if (!recipientAddress || !isAddress(recipientAddress)) {
         alert('Введите корректный адрес');
         return;
@@ -228,9 +233,9 @@ function WalletPage() {
         alert(`Недостаточно APH для комиссии (${commissionAPH.toFixed(4)} APH требуется)`);
         return;
       }
-      setLoading(true);
+      setLoadingSend(true);
       setTimeout(() => {
-        setLoading(false);
+        setLoadingSend(false);
         setLastSentAddress(recipientAddress);
         setSendStep(sendCount === 0 ? 1 : 2);
         if (sendCount >= 1) {
@@ -239,6 +244,7 @@ function WalletPage() {
         }
       }, 1500);
     } else if (sendStep === 1) {
+      // Списываем
       const updated = { ...tokenBalances };
       updated[tokenSymbol] -= parsedAmount;
       if (tokenSymbol !== 'APH') {
@@ -269,7 +275,7 @@ function WalletPage() {
         position: 'relative',
       }}
     >
-      {/* Заголовок с анимацией при наведении */}
+      {/* Заголовок (левый верх) */}
       <h1
         className="wallet-header"
         style={{
@@ -288,25 +294,15 @@ function WalletPage() {
         Aphelion Wallet
       </h1>
 
-      {/* Анимация для заголовка (hover эффект) */}
-      <style>{`
-        .wallet-header:hover {
-          transform: scale(1.1);
-        }
-        @keyframes glow {
-          0% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff; }
-          100% { text-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
-        }
-      `}</style>
-
-      {/* Блок с аватаром и кнопкой "Выйти" */}
+      {/* Фиксированный блок аватара + кнопка "Выйти" (правый верх) */}
       <div
-        className="user-info"
         style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'flex-start',
-          marginTop: '80px',
+          gap: '10px',
         }}
       >
         <img
@@ -316,7 +312,6 @@ function WalletPage() {
             width: '50px',
             height: '50px',
             borderRadius: '50%',
-            marginRight: '10px',
           }}
         />
         <button
@@ -335,7 +330,18 @@ function WalletPage() {
         </button>
       </div>
 
-      <h2 style={{ marginTop: '2rem' }}>Ваши активы</h2>
+      {/* Анимация для заголовка (hover-эффект) */}
+      <style>{`
+        .wallet-header:hover {
+          transform: scale(1.1);
+        }
+        @keyframes glow {
+          0% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff; }
+          100% { text-shadow: 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
+        }
+      `}</style>
+
+      <h2 style={{ marginTop: '5rem' }}>Ваши активы</h2>
       <div
         style={{
           backgroundColor: '#1e1e1e',
@@ -385,7 +391,6 @@ function WalletPage() {
             }}
           >
             <div>
-              {/* Иконка и название */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <img
                   src={token.icon}
@@ -666,7 +671,7 @@ function WalletPage() {
                 </div>
               </>
             )}
-            {loading && <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>}
+            {loadingSend && <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>}
           </div>
         </div>
       )}
