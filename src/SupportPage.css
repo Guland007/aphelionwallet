@@ -2,42 +2,35 @@
 .support-page {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
-  background: radial-gradient(circle at center, #0f0f1a 0%, #050510 100%);
+  background: #0d1117; /* Тёмный фон */
   padding: 2rem;
   font-family: 'Segoe UI', sans-serif;
 }
 
 /* Карточка поддержки */
 .support-card {
-  background: rgba(31, 31, 31, 0.85);
-  border-radius: 16px;
-  padding: 2.5rem;
+  background-color: #1e1e1e;
   max-width: 700px;
   width: 100%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   color: #fff;
-  backdrop-filter: blur(10px);
-  transition: transform 0.3s ease;
-}
-
-.support-card:hover {
-  transform: scale(1.02);
 }
 
 /* Заголовок */
 .support-title {
-  font-size: 28px;
+  font-size: 24px;
   margin-bottom: 1rem;
   color: #00d8ff;
   text-align: center;
-  letter-spacing: 1px;
 }
 
 /* Заголовки секций */
 .section-heading {
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 1rem;
   color: #fff;
 }
@@ -60,8 +53,8 @@
 .faq-question {
   color: #fff;
   font-weight: bold;
-  margin-bottom: 0.5rem;
   display: block;
+  margin-bottom: 0.5rem;
 }
 
 .faq-answer {
@@ -83,11 +76,9 @@
 .contact-link {
   color: #4dabf7;
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
 .contact-link:hover {
-  color: #00d8ff;
   text-decoration: underline;
 }
 
@@ -97,14 +88,14 @@
   text-align: center;
 }
 
-/* Обновлённая кнопка (со стилем, подходящим к общему дизайну) */
+/* Второстепенная (серая) кнопка */
 .secondary-button {
-  background: linear-gradient(45deg, #1f6feb, #00d8ff);
+  background: #1f6feb;
   color: #fff;
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -115,17 +106,18 @@
   box-shadow: 0 8px 20px rgba(31, 111, 235, 0.3);
 }
 
+
 /* Адаптивность для мобильных */
 @media (max-width: 600px) {
   .support-card {
-    padding: 1.5rem;
+    padding: 1rem;
     margin: 1rem;
   }
   .support-title {
-    font-size: 24px;
+    font-size: 20px;
   }
   .section-heading {
-    font-size: 18px;
+    font-size: 16px;
   }
   .faq-question,
   .faq-answer,
