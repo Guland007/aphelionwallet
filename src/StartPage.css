@@ -259,5 +259,135 @@ body {
       opacity: 0.2;
     }
   }
-   
+   /* Improved Support Page CSS */
+.support-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #0f0f1a 0%, #050510 100%);
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.support-card {
+  background: rgba(31, 31, 31, 0.85);
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 700px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+}
+
+.support-card:hover {
+  transform: scale(1.02);
+}
+
+.support-title {
+  font-size: 28px;
+  margin-bottom: 1rem;
+  color: #00d8ff;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.section-heading {
+  font-size: 20px;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.faq-section {
+  margin-top: 1.5rem;
+}
+
+.faq-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.faq-item {
+  margin-bottom: 1.5rem;
+}
+
+.faq-question {
+  color: #fff;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.faq-answer {
+  margin-top: 5px;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+.contacts-section {
+  margin-top: 2rem;
+}
+
+.contact-item {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.contact-link {
+  color: #4dabf7;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-link:hover {
+  color: #00d8ff;
+  text-decoration: underline;
+}
+
+.back-button-wrap {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.secondary-button {
+  background: linear-gradient(45deg, #1f6feb, #00d8ff);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.secondary-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(31, 111, 235, 0.3);
+}
+
+@media (max-width: 600px) {
+  .support-card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  .support-title {
+    font-size: 24px;
+  }
+  .section-heading {
+    font-size: 18px;
+  }
+  .faq-question,
+  .faq-answer,
+  .contact-item {
+    font-size: 14px;
+  }
+  .secondary-button {
+    font-size: 14px;
+    padding: 0.5rem 1rem;
+  }
+}
+
   
