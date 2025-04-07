@@ -391,12 +391,21 @@ function WalletPage() {
             }}
           >
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <img
-                  src={token.icon}
-                  alt={token.symbol}
-                  style={{ width: '32px', height: '32px' }}
-                />
+            <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center', /* добавляем, чтобы иконка и текст были по центру */
+        gap: '10px'
+      }}>
+        <img
+          src={token.icon}
+          alt={token.symbol}
+          style={{
+            width: '40px',
+            height: '40px',
+            objectFit: 'contain' /* картинка целиком в рамках 40x40 */
+          }}
+        />
                 <h3
                   style={{
                     fontSize: '22px',
@@ -722,26 +731,19 @@ function WalletPage() {
 
       {/* Кнопки внизу */}
       <div
-        className="wallet-footer-buttons"
-        style={{
-          marginTop: '2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <button className="footer-btn" onClick={() => navigate('/settings')}>
-          Настройки
-        </button>
-        <button className="footer-btn" onClick={() => navigate('/support')}>
-          Поддержка
-        </button>
-        <button className="footer-btn" onClick={() => navigate('/tokens')}>
-          О токенах
-        </button>
-        <button className="footer-btn" onClick={() => navigate('/')}>
-          Назад
-        </button>
-      </div>
+       className="wallet-footer-buttons"
+       style={{
+         marginTop: '2rem',
+         display: 'flex',
+         justifyContent: 'center',  
+         gap: '20px'                
+       }}
+     >
+       <button onClick={() => navigate('/settings')}>Настройки</button>
+       <button onClick={() => navigate('/support')}>Поддержка</button>
+       <button onClick={() => navigate('/tokens')}>О токенах</button>
+       <button onClick={() => navigate('/')}>Назад</button>
+     </div>
 
       <footer className="footer" style={{ marginTop: '2rem', textAlign: 'center' }}>
         © 2025 Aphelion Wallet | Все права защищены
