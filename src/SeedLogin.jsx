@@ -39,8 +39,9 @@ function SeedLogin() {
       const user = res.data;
 
       // Сохраняем данные в localStorage
-      localStorage.setItem('mnemonic', полученнаяСидФраза);
-      localStorage.setItem('user_id', полученныйUserId);
+      localStorage.setItem('mnemonic', mnemonic);
+      localStorage.setItem('user_id', user.id);
+     
 
 
 
