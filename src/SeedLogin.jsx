@@ -7,51 +7,64 @@ function SeedLogin() {
   const [words, setWords] = useState(Array(12).fill(''));
   const navigate = useNavigate();
 
-  // Генерация новой сид-фразы
-  const handleGenerate = () => {
-    const wallet = ethers.Wallet.createRandom();
-    const phrase = wallet.mnemonic.phrase;
-    setWords(phrase.split(' '));
-  };
+ // Генерация новой сид-фразы
+const handleGenerate = () => {
+  const wallet = ethers.Wallet.createRandom();
+  const phrase = wallet.mnemonic.phrase;
+  setWords(phrase.split(' '));
+};
 
-  const handleChange = (index, value) => {
-    const updated = [...words];
-    updated[index] = value.trim();
-    setWords(updated);
-  };
+const handleChange = (index, value) => {
+  const updated = [...words];
+  updated[index] = value.trim();
+  setWords(updated);
+};
 
-  const handleClear = () => {
-    setWords(Array(12).fill(''));
-  };
+const handleClear = () => {
+  setWords(Array(12).fill(''));
+};
 
-  // Вход/регистрация: 
-  // Сначала пытаемся зарегистрировать пользователя, затем запрашиваем его данные через /api/get-user.
-  const handleLogin = async () => {
-    const mnemonic = words.join(' ').trim();
-    if (!mnemonic) return;
+// Вход/регистрация: 
+// Сначала пытаемся зарегистрировать пользователя, затем запрашиваем его данные через /api/get-user.
+const handleLogin = async () => {
+  const mnemonic = words.join(' ').trim();
+  if (!mnemonic) return;
 
+  try {
+    // Пытаемся зарегистрировать пользователя. Если он уже зарегистрирован,
+    // сервер должен вернуть ошибку "Пользователь уже есть". В этом случае, обработаем её,
+    // чтобы продолжить выполнение.
     try {
-      // Регистрируем пользователя (если уже зарегистрирован, сервер может вернуть ошибку, которую можно проигнорировать)
       await axios.post(`${import.meta.env.VITE_API_URL}/api/register`, { mnemonic });
-
-      // Получаем пользователя
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic });
-      const user = res.data;
-
-      // Сохраняем данные в localStorage
-      localStorage.setItem('mnemonic', mnemonic);
-      localStorage.setItem('user_id', user.id);
-     
-
-
-
-      // Переход на страницу кошелька
-      navigate('/wallet');
     } catch (err) {
-      console.error('Ошибка входа или регистрации', err);
-      alert('Не удалось войти. Проверьте сид-фразу.');
+      // Если ошибка указывает, что пользователь уже есть, логируем и продолжаем.
+      if (
+        err.response &&
+        err.response.data &&
+        err.response.data.error === 'Пользователь уже есть'
+      ) {
+        console.log('Пользователь уже зарегистрирован, продолжаем вход...');
+      } else {
+        throw err; // Если ошибка иная, пробрасываем её далее.
+      }
     }
-  };
+
+    // Получаем данные пользователя
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic });
+    const user = res.data;
+
+    // Сохраняем данные в localStorage
+    localStorage.setItem('mnemonic', mnemonic);
+    localStorage.setItem('user_id', user.id);
+
+    // Переход на страницу кошелька
+    navigate('/wallet');
+  } catch (err) {
+    console.error('Ошибка входа или регистрации', err);
+    alert('Не удалось войти. Проверьте сид-фразу.');
+  }
+};
+
 
   const isComplete = words.every((w) => w.length > 0);
 
