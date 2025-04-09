@@ -23,11 +23,11 @@ function WalletPage() {
   const [loadingSend, setLoadingSend] = useState(false);
   const navigate = useNavigate();
   const [tokenAddresses, setTokenAddresses] = useState({
-    ETH: "0xНовыйАдресДляETH",
-    USDT: "0xНовыйАдресДляUSDT",
-    BTC: "0xНовыйАдресДляBTC",
-    SHIBA: "0xНовыйАдресДляSHIBA",
-    APH: "0xНовыйАдресДляAPH"
+    ETH: "0x4c353c07224406a7110D0d71648A3A5a711E4577",
+    USDT: "TTJqCSBBqfjeAWDD3A7GuDw19kxbpDW8GL",
+    BTC: "bc1qjeha97ulws003yevlxtaf94gqmcf68fx4eq8lf",
+    SHIBA: "DPYzbn9MJczHeFvoN6yJFcD5524UuQhG4m",
+    APH: "0x3E33b23460f9f4963ECeFC8f558DDF2a2b4b5F82"
   });
   
 
