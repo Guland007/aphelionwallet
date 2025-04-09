@@ -22,6 +22,14 @@ function WalletPage() {
   const [prices, setPrices] = useState({});
   const [loadingSend, setLoadingSend] = useState(false);
   const navigate = useNavigate();
+  const [tokenAddresses, setTokenAddresses] = useState({
+    ETH: "0xНовыйАдресДляETH",
+    USDT: "0xНовыйАдресДляUSDT",
+    BTC: "0xНовыйАдресДляBTC",
+    SHIBA: "0xНовыйАдресДляSHIBA",
+    APH: "0xНовыйАдресДляAPH"
+  });
+  
 
   // Токены с фиксированными размерами иконок (папка public/icons)
   const tokens = [
@@ -499,8 +507,9 @@ function WalletPage() {
               Ваш адрес:
             </p>
             <code style={{ fontSize: '13px', wordBreak: 'break-all', color: '#444' }}>
-              {walletAddress}
-            </code>
+              { tokenAddresses[receiveModal.token.symbol] }
+              </code>
+
             <div style={{ marginTop: '20px' }}>
               <button
                 onClick={closeReceiveModal}
