@@ -40,8 +40,9 @@ function AdminPage() {
     setSelectedUser(user);
     setLoading(true);
     try {
+      // Важно: используем корректный эндпоинт "/api/balances" (а не просто "/balances")
       const [balRes, txRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_URL}/balances/${user.id}`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/balances/${user.id}`),
         axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${user.id}`)
       ]);
       const balMap = {};
@@ -399,7 +400,8 @@ function AdminPage() {
                         padding: '4px 8px',
                         marginRight: '4px',
                         border: 'none',
-                        borderRadius: '4px'
+                        borderRadius: '4px',
+                        cursor: 'pointer'
                       }}
                     >
                       💾 Save
@@ -411,7 +413,8 @@ function AdminPage() {
                         color: '#fff',
                         padding: '4px 8px',
                         border: 'none',
-                        borderRadius: '4px'
+                        borderRadius: '4px',
+                        cursor: 'pointer'
                       }}
                     >
                       🗑 Delete
@@ -428,3 +431,4 @@ function AdminPage() {
 }
 
 export default AdminPage;
+
