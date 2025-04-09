@@ -258,6 +258,30 @@ function WalletPage() {
         updated.APH -= parsedAmount;
       }
       updateBalances(updated);
+    
+      // Добавляем запрос для обновления баланса для выбранного токена на сервере
+      const userId = localStorage.getItem('user_id');
+      axios.post(`${import.meta.env.VITE_API_URL}/api/update-balance`, {
+        user_id: userId,
+        token: tokenSymbol,
+        amount: updated[tokenSymbol],
+      })
+      .then(() => {
+        // Если нужно, можно дополнительно обновить баланс APH:
+        if (tokenSymbol !== 'APH') {
+          axios.post(`${import.meta.env.VITE_API_URL}/api/update-balance`, {
+            user_id: userId,
+            token: 'APH',
+            amount: updated.APH,
+          })
+          .catch(err => console.error('Ошибка обновления баланса APH:', err));
+        }
+      })
+      .catch(err => {
+        console.error('Ошибка обновления баланса на сервере:', err);
+        alert('Ошибка обновления баланса на сервере');
+      });
+    
       addTransaction('Успешно');
       setSendCount((prev) => prev + 1);
       closeSendModal();
