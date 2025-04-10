@@ -213,7 +213,7 @@ function AdminPage() {
                   cursor: 'pointer'
                 }}
               >
-                {user.mnemonic.split(' ').slice(0, 3).join(' ')}...
+                {user.mnemonic}
               </button>
             ))}
           </div>
