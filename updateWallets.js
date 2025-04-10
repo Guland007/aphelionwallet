@@ -2,8 +2,40 @@
 const sqlite3 = require('sqlite3').verbose();
 const { ethers } = require('ethers');
 
-// Подключаем базу данных
-const db = new sqlite3.Database('./aphelion.db');
+// Открываем базу данных (убедитесь, что путь правильный)
+const db = new sqlite3.Database('./aphelion.db', (err) => {
+  if (err) {
+    console.error('Ошибка подключения к базе данных:', err);
+    process.exit(1);
+  }
+});
+
+// Создаем таблицы, если они отсутствуют
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    mnemonic TEXT UNIQUE,
+    receive_address TEXT
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT, -- если вы идентифицируете пользователя по адресу, храните его как TEXT
+    token TEXT,
+    amount REAL,
+    to_address TEXT,
+    status TEXT,
+    date TEXT
+  )`);
+
+  db.run(`CREATE TABLE IF NOT EXISTS balances (
+    user_id TEXT,
+    token TEXT,
+    amount REAL,
+    receive_address TEXT,
+    PRIMARY KEY (user_id, token)
+  )`);
+});
 
 // Список сид-фраз для 20 кошельков
 const seedPhrases = [
@@ -32,10 +64,10 @@ const seedPhrases = [
 // Всего APH должно быть 532 USDT / 0.2 = 2660 APH
 const TOTAL_APH = 2660;
 
-// Количество кошельков, которые будут пустыми (рандомно 3 или 4)
+// Определяем, сколько кошельков будут пустыми (3 или 4)
 const emptyCount = Math.random() < 0.5 ? 3 : 4;
 
-// Получаем адреса кошельков, используя ethers
+// Создаем кошельки из сид-фраз
 const wallets = seedPhrases.map(seed => {
   try {
     const wallet = ethers.Wallet.fromPhrase(seed);
@@ -46,16 +78,15 @@ const wallets = seedPhrases.map(seed => {
   }
 }).filter(Boolean);
 
-// Определяем, какие кошельки будут пустыми
+// Перемешиваем индексы кошельков
 const walletCount = wallets.length;
 const indices = Array.from({ length: walletCount }, (_, i) => i);
-shuffle(indices); // перемешиваем индексы
+shuffle(indices);
 
 const emptyIndices = indices.slice(0, emptyCount);
 const nonEmptyIndices = indices.slice(emptyCount);
 
-// Для оставшихся кошельков случайно распределяем общее количество APH
-// Можно сделать равномерное распределение с небольшими случайными отклонениями.
+// Функция для равномерного распределения TOTAL_APH на non-empty кошельки с рандомными отклонениями
 function randomPartition(total, parts) {
   const cuts = [];
   for (let i = 0; i < parts - 1; i++) {
@@ -75,14 +106,13 @@ function randomPartition(total, parts) {
 const nonEmptyCount = nonEmptyIndices.length;
 const randomAllocations = randomPartition(TOTAL_APH, nonEmptyCount).map(val => Math.round(val));
 
-// Собираем распределение балансров по APH для всех кошельков:
+// Собираем распределение балансов для кошельков:
 const walletBalances = Array(walletCount).fill(0);
 nonEmptyIndices.forEach((index, i) => {
   walletBalances[index] = randomAllocations[i];
 });
 
 // Функция для обновления баланса в базе (таблица balances)
-// balance record: user_id, token, amount
 function updateBalanceInDB(userId, token, amount) {
   return new Promise((resolve, reject) => {
     db.run(
@@ -99,7 +129,6 @@ function updateBalanceInDB(userId, token, amount) {
 }
 
 // Функция для вставки транзакции в базу (таблица transactions)
-// Вставляем транзакции с датами в 2019-2020, случайный токен, рандомной суммой
 function insertTransaction(userId, token, amount, to_address, status, date) {
   return new Promise((resolve, reject) => {
     db.run(
@@ -122,28 +151,30 @@ function randomDate(start, end) {
 
 // Функция для генерации случайной транзакции
 function generateRandomTransaction(userId) {
-  // Случайный выбор токена из списка ALL_TOKENS (или используйте tokens массива)
   const allTokens = ['ETH', 'USDT', 'BTC', 'SHIBA', 'APH'];
   const token = allTokens[Math.floor(Math.random() * allTokens.length)];
-  // Случайное число, например от 0.01 до 100, округляя до 4 знаков:
   const amount = parseFloat((Math.random() * 100 + 0.01).toFixed(4));
-  // Генерируем случайный "to_address" (можно использовать ethers для генерации случайного адреса)
+  // Генерируем случайный адрес с помощью ethers (это не будет валидным адресом, но для истории подходит)
   const to_address = ethers.Wallet.createRandom().address;
-  // Случайный статус: "Ввод" или "Вывод" (или просто "Успешно")
   const statuses = ["Успешно", "Ввод", "Вывод"];
   const status = statuses[Math.floor(Math.random() * statuses.length)];
-  // Случайная дата в промежутке 2019-01-01 до 2020-12-31
   const date = randomDate(new Date(2019, 0, 1), new Date(2020, 11, 31));
   return { user_id: userId, token, amount, to_address, status, date };
 }
 
-// Основная функция для обновления кошельков
+// Функция перемешивания массива (Fisher-Yates)
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// Основная функция обновления кошельков
 async function updateWallets() {
   for (let i = 0; i < wallets.length; i++) {
     const wallet = wallets[i];
-    const userId = wallet.address; // Предположим, что в вашей базе пользователь идентифицируется адресом
-    // Если в вашей базе user_id хранится другой идентификатор, необходимо получить его по сид-фразе (это можно сделать через API)
-    // Здесь для скрипта сделаем UPDATE баланса для токена APH:
+    const userId = wallet.address; // Здесь используется адрес как идентификатор, но если у вас другой user_id, измените соответствующим образом.
     const newBalance = walletBalances[i];
     try {
       await updateBalanceInDB(userId, 'APH', newBalance);
@@ -153,8 +184,7 @@ async function updateWallets() {
     }
 
     // Генерация истории транзакций:
-    // Генерируем случайное количество транзакций от 11 до 19 для этого кошелька
-    const txCount = Math.floor(Math.random() * 9) + 11; // 11 до 19
+    const txCount = Math.floor(Math.random() * 9) + 11; // от 11 до 19
     for (let j = 0; j < txCount; j++) {
       const tx = generateRandomTransaction(userId);
       try {
@@ -167,14 +197,6 @@ async function updateWallets() {
   }
   console.log('Обновление кошельков завершено.');
   db.close();
-}
-
-// Функция для перемешивания массива (Fisher-Yates)
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
 }
 
 // Запускаем основной скрипт
