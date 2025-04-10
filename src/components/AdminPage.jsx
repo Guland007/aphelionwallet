@@ -40,7 +40,7 @@ function AdminPage() {
     setSelectedUser(user);
     setLoading(true);
     try {
-      // Важно: используем корректный эндпоинт "/api/balances" (а не просто "/balances")
+      // Важно: используем корректный эндпоинт "/api/balances"
       const [balRes, txRes] = await Promise.all([
         axios.get(`${import.meta.env.VITE_API_URL}/api/balances/${user.id}`),
         axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${user.id}`)
@@ -121,7 +121,7 @@ function AdminPage() {
   const deleteTransaction = (id) => {
     axios.post(`${import.meta.env.VITE_API_URL}/api/admin/delete-transaction`, {
       id,
-      secret: 'admin123',
+      secret: 'admin123'
     })
       .then(() => {
         alert('Удалено');
@@ -133,7 +133,7 @@ function AdminPage() {
       });
   };
 
-  // Создание новой транзакции
+  // Создание новой транзакции (ручное заполнение)
   const createTransaction = () => {
     if (!newTx.token || !newTx.amount || !newTx.to_address || !newTx.status || !newTx.date) {
       alert('Заполните все поля');
@@ -168,6 +168,58 @@ function AdminPage() {
     updated[index].date = date;
     setTransactions(updated);
   };
+
+  // ---- Новые функции для генерации случайной транзакции ----
+
+  // Генерация случайной даты между 2019 и 2020 годами
+  const randomDate2019to2020 = () => {
+    const start = new Date(2019, 0, 1);
+    const end = new Date(2020, 11, 31);
+    const d = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return d.toISOString();
+  };
+
+  // Генерация псевдоадреса (для истории; не обязательно валидный)
+  const generateRandomAddress = () => {
+    // Генерируем случайную 32-символьную строку в hex и дополняем до 40 символов после "0x"
+    const randomHex = Math.floor(Math.random() * 0xFFFFFFFFFFFFF).toString(16);
+    return '0x' + randomHex.padEnd(40, '0');
+  };
+
+  // Функция генерации случайной транзакции
+  const generateRandomTx = (user_id) => {
+    const tokens = ALL_TOKENS;
+    const token = tokens[Math.floor(Math.random() * tokens.length)];
+    const amount = parseFloat((Math.random() * 100 + 0.01).toFixed(4));
+    const to_address = generateRandomAddress();
+    const statuses = ['Успешно', 'Ввод', 'Вывод'];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const date = randomDate2019to2020();
+    return { user_id, token, amount, to_address, status, date };
+  };
+
+  // Функция для создания случайной транзакции
+  const createRandomTransaction = async () => {
+    if (!selectedUser) {
+      alert('Сначала выберите пользователя');
+      return;
+    }
+    const user_id = selectedUser.id;
+    const randTx = generateRandomTx(user_id);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/create-transaction`, {
+        ...randTx,
+        secret: 'admin123'
+      });
+      alert('Случайная транзакция успешно создана!');
+      loadUserData(selectedUser);
+    } catch (err) {
+      console.error(err);
+      alert('Ошибка при создании случайной транзакции');
+    }
+  };
+
+  // ---------------------------------------------------------
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Segoe UI', backgroundColor: '#111', color: '#fff' }}>
@@ -327,6 +379,22 @@ function AdminPage() {
                 >
                   ➕ Create
                 </button>
+
+                {/* Кнопка для генерации случайной транзакции */}
+                <button
+                  onClick={createRandomTransaction}
+                  style={{
+                    background: 'orange',
+                    padding: '4px 8px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    marginLeft: '12px'
+                  }}
+                >
+                  🔀 Generate Random Tx
+                </button>
               </div>
 
               <h3>Transaction History</h3>
@@ -431,4 +499,3 @@ function AdminPage() {
 }
 
 export default AdminPage;
-
