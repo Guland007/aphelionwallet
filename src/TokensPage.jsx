@@ -46,7 +46,7 @@ function TokensPage() {
           ETH: res.data.ethereum.usd,
           USDT: res.data.tether.usd,
           SHIBA: res.data['shiba-inu'].usd,
-          APH: 0.2
+          APH: 0.216
         });
       } catch (err) {
         console.error('Ошибка получения курсов:', err);
