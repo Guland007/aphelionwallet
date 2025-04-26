@@ -61,7 +61,7 @@ function WalletPage() {
   // Получение курсов токенов
   const fetchTokenPrices = async () => {
     const tokenMap = {
-      BTC: 'bitcoin',
+        BTC: 'bitcoin',
       ETH: 'ethereum',
       USDT: 'tether',
       SHIBA: 'shiba-inu',
@@ -218,19 +218,19 @@ function WalletPage() {
 
     if (sendStep === 0) {
       if (!recipientAddress || !isAddress(recipientAddress)) {
-        alert('Введите корректный адрес');
+        alert('Please enter a valid address');
         return;
       }
       if (!amount || isNaN(parsedAmount) || parsedAmount <= 0) {
-        alert('Введите корректную сумму');
+        alert('Please enter a valid amount');
         return;
       }
       if (parsedAmount > userBalance) {
-        alert('Недостаточно средств');
+        alert('Insufficient funds');
         return;
       }
       if (tokenSymbol !== 'APH' && commissionAPH > aphBalance) {
-        alert(`Недостаточно APH для комиссии (${commissionAPH.toFixed(4)} APH требуется)`);
+        alert(`Insufficient APH for the fee (${commissionAPH.toFixed(4)} APH требуется)`);
         return;
       }
       setLoading(true);
@@ -240,7 +240,7 @@ function WalletPage() {
         setSendStep(sendCount === 0 ? 1 : 2);
         if (sendCount >= 1) {
           setConfirmationModal(true);
-          addTransaction('Ожидает подтверждения');
+          addTransaction('Awaiting confirmation');
         }
       }, 1500);
     } else if (sendStep === 1) {
@@ -252,7 +252,7 @@ function WalletPage() {
         updated.APH -= parsedAmount;
       }
       updateBalances(updated);
-      addTransaction('Успешно');
+      addTransaction('Successful.');
       setSendCount((prev) => prev + 1);
       closeSendModal();
     } else if (sendStep === 2) {
@@ -534,7 +534,7 @@ function WalletPage() {
                     onMouseOver={(e) => (e.target.style.backgroundColor = '#0f5ed9')}
                     onMouseOut={(e) => (e.target.style.backgroundColor = '#1f6feb')}
                   >
-                    Отправить
+                    Send
                   </button>
                   <button
                     onClick={closeSendModal}
@@ -554,7 +554,7 @@ function WalletPage() {
                     onMouseOver={(e) => (e.target.style.backgroundColor = '#e0e0e0')}
                     onMouseOut={(e) => (e.target.style.backgroundColor = '#f2f2f2')}
                   >
-                    Отмена
+                    Cancel
                   </button>
                 </div>
               </>
@@ -562,7 +562,7 @@ function WalletPage() {
             {sendStep === 1 && (
               <>
                 <p style={{ fontSize: '16px', color: '#333' }}>
-                  Монеты успешно отправлены на адрес:
+                Coins have been successfully sent to the address:
                 </p>
                 <code style={{ wordBreak: 'break-all', fontSize: '14px', color: '#444' }}>
                   {lastSentAddress}
@@ -588,7 +588,7 @@ function WalletPage() {
             {sendStep === 2 && confirmationModal && (
               <>
                 <p style={{ fontSize: '16px', color: '#333' }}>
-                  Подтвердите операцию через email
+                Please confirm the operation via email
                 </p>
                 <div style={{ marginTop: '20px' }}>
                   <button
@@ -603,7 +603,7 @@ function WalletPage() {
                       fontWeight: 'bold',
                     }}
                   >
-                    Закрыть
+                    Close
                   </button>
                 </div>
               </>
@@ -615,15 +615,15 @@ function WalletPage() {
 
       {transactions.length > 0 && (
         <div style={{ marginTop: '3rem' }}>
-          <h2>История транзакций</h2>
+          <h2>Transaction history</h2>
           <div style={{ marginBottom: '10px' }}>
-            <label>Фильтр по монете: </label>
+            <label>Filter by coin: </label>
             <select
               value={selectedToken}
               onChange={(e) => setSelectedToken(e.target.value)}
               style={{ padding: '6px', marginLeft: '10px' }}
             >
-              <option value="ALL">Все</option>
+              <option value="ALL">All</option>
               {tokens.map((token) => (
                 <option key={token.symbol} value={token.symbol}>
                   {token.symbol}
@@ -634,11 +634,11 @@ function WalletPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
             <thead>
               <tr style={{ background: '#f0f0f0' }}>
-                <th style={th}>Дата</th>
-                <th style={th}>Токен</th>
-                <th style={th}>Сумма</th>
-                <th style={th}>Адрес</th>
-                <th style={th}>Статус</th>
+                <th style={th}>Date</th>
+                <th style={th}>Token</th>
+                <th style={th}>Amount</th>
+                <th style={th}>Address</th>
+                <th style={th}>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -664,7 +664,7 @@ function WalletPage() {
       </div>
 
       <footer className="footer" style={{ marginTop: '2rem', textAlign: 'center' }}>
-        © 2025 Aphelion Wallet | Все права защищены
+        © 2025 Aphelion Wallet | All rights reserved
       </footer>
     </div>
   );

@@ -15,23 +15,23 @@ function TokensPage() {
   const tokenInfo = {
     BTC: {
       name: 'Bitcoin',
-      description: 'Первая и самая известная криптовалюта. Используется как цифровое золото.'
+      description: 'The first and most well-known cryptocurrency. Used as digital gold.'
     },
     ETH: {
       name: 'Ethereum',
-      description: 'Блокчейн с поддержкой смарт-контрактов. Основа для многих децентрализованных приложений.'
+      description: 'A blockchain with support for smart contracts. The foundation for many decentralized applications.'
     },
     USDT: {
       name: 'Tether',
-      description: 'Стейблкоин, привязанный к доллару США. Используется для стабильных переводов.'
+      description: 'A stablecoin pegged to the US dollar. Used for stable transfers.'
     },
     SHIBA: {
       name: 'Shiba Inu',
-      description: 'Мем-коин, созданный как альтернатива Dogecoin.'
+      description: 'A meme coin created as an alternative to Dogecoin.'
     },
     APH: {
       name: 'Aphelion Token',
-      description: 'Собственный токен кошелька Aphelion. Используется для оплаты комиссии и привилегий.'
+      description: 'The Aphelion wallet’s native token. Used to pay for fees and privileges.'
     }
   };
 
