@@ -23,13 +23,13 @@ function WalletPage() {
   const navigate = useNavigate();
 
   const tokens = [
-    { symbol: 'APH',   name: 'Aphelion Token', icon: '/icons/aph.png' },
-    { symbol: 'ETH',   name: 'Ethereum',       icon: '/icons/eth.png' },
-    { symbol: 'USDT',  name: 'Tether USD',     icon: '/icons/usdt.png' },
-    { symbol: 'BTC',   name: 'Bitcoin',        icon: '/icons/btc.png' },
-    { symbol: 'SHIBA', name: 'Shiba Inu',      icon: '/icons/shiba.png' },
+    { symbol: 'APH',   name: 'Aphelion Token' },
+    { symbol: 'ETH',   name: 'Ethereum'       },
+    { symbol: 'USDT',  name: 'Tether USD'     },
+    { symbol: 'BTC',   name: 'Bitcoin'        },
+    { symbol: 'SHIBA', name: 'Shiba Inu'      },
   ];
-  
+
   // Получение транзакций
   const fetchTransactions = async () => {
     const userId = localStorage.getItem('user_id');
@@ -259,6 +259,8 @@ function WalletPage() {
       closeSendModal();
     }
   };
+  const getIconUrl = (symbol) =>
+    `${import.meta.env.BASE_URL}icons/${symbol.toLowerCase()}.png`;
 
   // Стили для таблицы
   const th = { padding: '10px', textAlign: 'left', borderBottom: '1px solid #ccc' };
