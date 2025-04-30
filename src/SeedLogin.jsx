@@ -32,10 +32,10 @@ function SeedLogin() {
 
     try {
       // Регистрируем пользователя (если уже зарегистрирован, сервер может вернуть ошибку, которую можно проигнорировать)
-      await axios.post('http://localhost:3001/api/register', { mnemonic });
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/register`, { mnemonic });
 
       // Получаем пользователя
-      const res = await axios.post('http://localhost:3001/api/get-user', { mnemonic });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic });
       const user = res.data;
 
       // Сохраняем данные в localStorage

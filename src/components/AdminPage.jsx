@@ -21,7 +21,7 @@ function AdminPage() {
 
   // Загружаем список пользователей при монтировании компонента
   useEffect(() => {
-    axios.get('http://localhost:3001/api/users')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/users`)
       .then(res => setUsers(res.data))
       .catch(err => console.error('Error loading users:', err));
   }, []);
@@ -41,8 +41,8 @@ function AdminPage() {
     setLoading(true);
     try {
       const [balRes, txRes] = await Promise.all([
-        axios.get(`http://localhost:3001/api/balances/${user.id}`),
-        axios.get(`http://localhost:3001/api/transactions/${user.id}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/api/balances/${user.id}`),
+        axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${user.id}`)
       ]);
       const balMap = {};
       const addrMap = {};
@@ -62,7 +62,7 @@ function AdminPage() {
 
   // Обновление receiving address для конкретного токена (в таблице balances)
   const updateBalanceAddress = (token, address) => {
-    axios.post('http://localhost:3001/api/admin/update-balance-address', {
+    axios.post(`${import.meta.env.VITE_API_URL}/api/admin/update-balance-address`, {
       user_id: selectedUser.id,
       token,
       receive_address: address,
@@ -80,7 +80,7 @@ function AdminPage() {
 
   // Обновление баланса (admin)
   const updateBalance = (token, amount) => {
-    axios.post('http://localhost:3001/api/admin/update-balance', {
+    axios.post(`${import.meta.env.VITE_API_URL}/api/admin/update-balance`, {
       user_id: selectedUser.id,
       token,
       amount: parseFloat(amount),
@@ -97,7 +97,7 @@ function AdminPage() {
   // Обновление транзакции
   const updateTransaction = (tx) => {
     const formattedDate = new Date(tx.date).toISOString();
-    axios.post('http://localhost:3001/api/admin/update-transaction', {
+    axios.post(`${import.meta.env.VITE_API_URL}/api/admin/update-transaction`, {
       id: tx.id,
       token: tx.token,
       amount: parseFloat(tx.amount),
@@ -118,7 +118,7 @@ function AdminPage() {
 
   // Удаление транзакции
   const deleteTransaction = (id) => {
-    axios.post('http://localhost:3001/api/admin/delete-transaction', {
+    axios.post(`${import.meta.env.VITE_API_URL}/api/admin/delete-transaction`, {
       id,
       secret: 'admin123',
     })
@@ -139,7 +139,7 @@ function AdminPage() {
       return;
     }
     const finalDate = new Date(newTx.date).toISOString();
-    axios.post('http://localhost:3001/api/admin/create-transaction', {
+    axios.post(`${import.meta.env.VITE_API_URL}/api/admin/create-transaction`, {
       ...newTx,
       date: finalDate,
       user_id: selectedUser.id,

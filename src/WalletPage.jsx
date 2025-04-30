@@ -35,7 +35,7 @@ function WalletPage() {
     const userId = localStorage.getItem('user_id');
     if (!userId) return;
     try {
-      const res = await axios.get(`http://localhost:3001/api/transactions/${userId}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/transactions/${userId}`);
       setTransactions(res.data);
     } catch (err) {
       console.error('Ошибка загрузки транзакций:', err);
@@ -47,7 +47,7 @@ function WalletPage() {
     const userId = localStorage.getItem('user_id');
     if (!userId) return;
     try {
-      const res = await axios.get(`http://localhost:3001/api/balances/${userId}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/balances/${userId}`);
       const balancesObj = {};
       res.data.forEach(({ token, amount }) => {
         balancesObj[token] = amount;
@@ -105,7 +105,7 @@ function WalletPage() {
       navigate('/');
     }
 
-    axios.post('http://localhost:3001/api/get-user', { mnemonic: savedMnemonic })
+    axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic: savedMnemonic })
       .then(res => {
         const userId = res.data.id;
         localStorage.setItem('user_id', userId);
@@ -190,7 +190,7 @@ function WalletPage() {
 
     const userId = localStorage.getItem('user_id');
     try {
-      await axios.post('http://localhost:3001/api/transaction', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/transaction`, {
         user_id: userId,
         token: newTx.token,
         amount: newTx.amount,
