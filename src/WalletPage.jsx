@@ -23,13 +23,13 @@ function WalletPage() {
   const navigate = useNavigate();
 
   const tokens = [
-    { symbol: 'ETH', name: 'Ethereum' },
-    { symbol: 'USDT', name: 'Tether USD' },
-    { symbol: 'BTC', name: 'Bitcoin' },
-    { symbol: 'SHIBA', name: 'Shiba Inu' },
-    { symbol: 'APH', name: 'Aphelion Token' },
+    { symbol: 'APH',   name: 'Aphelion Token', icon: '/icons/aph.png' },
+    { symbol: 'ETH',   name: 'Ethereum',       icon: '/icons/eth.png' },
+    { symbol: 'USDT',  name: 'Tether USD',     icon: '/icons/usdt.png' },
+    { symbol: 'BTC',   name: 'Bitcoin',        icon: '/icons/btc.png' },
+    { symbol: 'SHIBA', name: 'Shiba Inu',      icon: '/icons/shiba.png' },
   ];
-
+  
   // Получение транзакций
   const fetchTransactions = async () => {
     const userId = localStorage.getItem('user_id');
