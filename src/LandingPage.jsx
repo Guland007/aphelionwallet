@@ -11,8 +11,8 @@ function LandingPage() {
       <header className="landing-header">
         <h1 className="logo">🚀 Aphelion Wallet</h1>
         <div className="header-buttons">
-          <button onClick={() => navigate('/')} className="glow-btn">Войти</button>
-          <button onClick={() => navigate('/')} className="glow-btn">Сгенерировать</button>
+          <button onClick={() => navigate('/')} className="glow-btn">Log in</button>
+          <button onClick={() => navigate('/')} className="glow-btn">Generate</button>
         </div>
       </header>
 
@@ -20,10 +20,10 @@ function LandingPage() {
         <img src="/wallet-illustration.png" alt="wallet" className="wallet-img" />
         <h2 className="headline">Космический уровень безопасности и удобства</h2>
         <ul className="features">
-          <li>✅ Без регистрации — только сид-фраза</li>
-          <li>✅ Прозрачные комиссии</li>
-          <li>✅ Простой и интуитивный интерфейс</li>
-          <li>✅ Защита личных данных</li>
+          <li>✅ No registration — only a seed phrase</li>
+          <li>✅ Transparent fees</li>
+          <li>✅ Simple and intuitive interface</li>
+          <li>✅ Personal data protection</li>
         </ul>
       </main>
     </div>
