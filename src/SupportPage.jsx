@@ -7,26 +7,26 @@ function SupportPage() {
 
   const faq = [
     {
-      question: 'Как восстановить доступ к кошельку?',
-      answer: 'Используйте вашу сид-фразу из 12 слов на главной странице входа.'
+      question: 'How do I restore access to my wallet?',
+      answer: 'Use your 12-word seed phrase on the main login page.'
     },
     {
-      question: 'Где взять адрес моего кошелька?',
-      answer: 'На странице кошелька нажмите кнопку “Получить” напротив нужной монеты.'
+      question: 'Where can I find my wallet address?',
+      answer: 'On the Wallet page, click “Receive” next to the desired token.'
     },
     {
-      question: 'Как связаться с поддержкой?',
-      answer: 'Вы можете написать на email, указанный ниже.'
+      question: 'How can I contact support?',
+      answer: 'You can email us at the address below.'
     },
   ];
 
   return (
     <div className="support-page">
       <div className="support-card">
-        <h2 className="support-title">Помощь и поддержка</h2>
+        <h2 className="support-title">Help &amp; Support</h2>
 
         <section className="faq-section">
-          <h3 className="section-heading">📖 Часто задаваемые вопросы (FAQ)</h3>
+          <h3 className="section-heading">📖 Frequently Asked Questions (FAQ)</h3>
           <ul className="faq-list">
             {faq.map((item, index) => (
               <li key={index} className="faq-item">
@@ -38,11 +38,11 @@ function SupportPage() {
         </section>
 
         <section className="contacts-section">
-          <h3 className="section-heading">📬 Контакты</h3>
+          <h3 className="section-heading">📬 Contact</h3>
           <p className="contact-item">
             Email:&nbsp;
             <a href="mailto:aphelionwallet@proton.me" className="contact-link">
-            aphelionwallet@proton.me
+              aphelionwallet@proton.me
             </a>
           </p>
           <p className="contact-item">
@@ -63,7 +63,7 @@ function SupportPage() {
             className="secondary-button"
             onClick={() => navigate('/wallet')}
           >
-            Назад
+            Back
           </button>
         </div>
       </div>
