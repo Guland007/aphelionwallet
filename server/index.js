@@ -12,7 +12,10 @@ const db = new sqlite3.Database('./aphelion.db');
 // Настройка CORS: разрешаем запросы с указанных origin
 const allowedOrigins = [
   'http://localhost:3001',
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'https://aphelionwallet.onrender.com',
+  'https://aphelionwallet.info',
+  'https://www.aphelionwallet.info',
 ];
 
 app.use(cors({
