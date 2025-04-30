@@ -18,7 +18,7 @@ function LandingPage() {
 
       <main className="landing-main">
         <img src="/wallet-illustration.png" alt="wallet" className="wallet-img" />
-        <h2 className="headline">Космический уровень безопасности и удобства</h2>
+        <h2 className="headline">Cosmic-level security and convenience</h2>
         <ul className="features">
           <li>✅ No registration — only a seed phrase</li>
           <li>✅ Transparent fees</li>
