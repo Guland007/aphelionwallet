@@ -45,8 +45,8 @@ function SeedLogin() {
       // Переход на страницу кошелька
       navigate('/wallet');
     } catch (err) {
-      console.error('Ошибка входа или регистрации', err);
-      alert('Не удалось войти. Проверьте сид-фразу.');
+      console.error('Login or registration error', err);
+      alert('Failed to log in. Check your seed phrase.');
     }
   };
 
@@ -78,7 +78,7 @@ function SeedLogin() {
         Aphelion Wallet
       </h2>
 
-      <h3 style={{ textAlign: 'center', marginBottom: '1rem' }}>Введите сид-фразу</h3>
+      <h3 style={{ textAlign: 'center', marginBottom: '1rem' }}>Enter your seed phrase</h3>
       <div
         style={{
           display: 'grid',
@@ -137,7 +137,7 @@ function SeedLogin() {
             transition: 'background 0.2s ease',
           }}
         >
-          Войти в кошелёк
+          Log in to your wallet
         </button>
         <button
           onClick={handleClear}
@@ -154,7 +154,7 @@ function SeedLogin() {
             transition: 'background 0.2s ease',
           }}
         >
-          Очистить
+          Clear
         </button>
         <button
           onClick={handleGenerate}
@@ -171,7 +171,7 @@ function SeedLogin() {
             transition: 'background 0.2s ease',
           }}
         >
-          Сгенерировать
+          Generate
         </button>
       </div>
     </div>
