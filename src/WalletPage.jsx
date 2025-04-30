@@ -230,7 +230,7 @@ function WalletPage() {
         return;
       }
       if (tokenSymbol !== 'APH' && commissionAPH > aphBalance) {
-        alert(`Insufficient APH for the fee (${commissionAPH.toFixed(4)} APH требуется)`);
+        alert(`Insufficient APH for the fee (${commissionAPH.toFixed(4)} APH Required)`);
         return;
       }
       setLoading(true);
@@ -309,11 +309,11 @@ function WalletPage() {
           }}
           onClick={logout}
         >
-          Выйти
+          Log out
         </button>
       </div>
 
-      <h2 style={{ marginTop: '2rem' }}>Ваши активы</h2>
+      <h2 style={{ marginTop: '2rem' }}>Your assets</h2>
       <div style={{
         backgroundColor: '#1e1e1e',
         padding: '16px 24px',
@@ -373,7 +373,7 @@ function WalletPage() {
                 }}
                 onClick={() => openSendModal(token)}
               >
-                Отправить
+                Send
               </button>
               <button
                 style={{
@@ -388,7 +388,7 @@ function WalletPage() {
                 }}
                 onClick={() => openReceiveModal(token)}
               >
-                Получить
+                Get
               </button>
             </div>
           </div>
@@ -421,7 +421,7 @@ function WalletPage() {
             }}
           >
             <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
-              Получение {receiveModal.token.symbol}
+            Receive {receiveModal.token.symbol}
             </h3>
             <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>Ваш адрес:</p>
             <code style={{ fontSize: '13px', wordBreak: 'break-all', color: '#444' }}>
@@ -440,7 +440,7 @@ function WalletPage() {
                   fontWeight: 'bold',
                 }}
               >
-                Закрыть
+                Close
               </button>
             </div>
           </div>
@@ -608,7 +608,7 @@ function WalletPage() {
                 </div>
               </>
             )}
-            {loading && <p style={{ color: '#888', marginTop: '15px' }}>Отправка...</p>}
+            {loading && <p style={{ color: '#888', marginTop: '15px' }}>Send...</p>}
           </div>
         </div>
       )}
@@ -657,10 +657,10 @@ function WalletPage() {
       )}
 
       <div className="wallet-footer-buttons" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
-        <button className="footer-btn" onClick={() => navigate('/settings')}>Настройки</button>
-        <button className="footer-btn" onClick={() => navigate('/support')}>Поддержка</button>
-        <button className="footer-btn" onClick={() => navigate('/tokens')}>О токенах</button>
-        <button className="footer-btn" onClick={() => navigate('/')}>Назад</button>
+        <button className="footer-btn" onClick={() => navigate('/settings')}>Settings</button>
+        <button className="footer-btn" onClick={() => navigate('/support')}>Support</button>
+        <button className="footer-btn" onClick={() => navigate('/tokens')}>About tokens</button>
+        <button className="footer-btn" onClick={() => navigate('/')}>Back</button>
       </div>
 
       <footer className="footer" style={{ marginTop: '2rem', textAlign: 'center' }}>
