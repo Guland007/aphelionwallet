@@ -1,175 +1,129 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+// src/components/AdminPage.jsx
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
-const ALL_TOKENS = ['ETH', 'USDT', 'BTC', 'SHIBA', 'APH'];
+const ALL_TOKENS = ['ETH', 'USDT', 'BTC', 'SHIBA', 'APH']
 
-function AdminPage() {
-  // Состояния для авторизации
-  const [authorized, setAuthorized] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
+export default function AdminPage() {
+  const API = import.meta.env.VITE_API_URL
+  const ADMIN_SECRET = 'admin123'
 
-  // Основные состояния админ панели
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [balances, setBalances] = useState({});
-  const [balanceAddresses, setBalanceAddresses] = useState({}); // для каждого токена
-  const [transactions, setTransactions] = useState([]);
-  const [newTx, setNewTx] = useState({ token: '', amount: '', to_address: '', status: '', date: '' });
-  const [loading, setLoading] = useState(false);
+  // Авторизация
+  const [authorized, setAuthorized] = useState(false)
+  const [adminPassword, setAdminPassword] = useState('')
 
-  // Загружаем список пользователей при монтировании компонента
+  // Основные стейты
+  const [users, setUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [balances, setBalances] = useState({})
+  const [balanceAddresses, setBalanceAddresses] = useState({})
+  const [transactions, setTransactions] = useState([])
+  const [newTx, setNewTx] = useState({
+    token: '',
+    amount: '',
+    to_address: '',
+    status: '',
+    date: ''
+  })
+  const [loading, setLoading] = useState(false)
+
+  // Загрузить всех юзеров
   useEffect(() => {
-    axios.get('http://localhost:3001/api/users')
+    axios
+      .get(`${API}/api/users`)
       .then(res => setUsers(res.data))
-      .catch(err => console.error('Error loading users:', err));
-  }, []);
+      .catch(console.error)
+  }, [])
 
-  // Функция для проверки пароля
+  // Вход
   const handleLogin = () => {
-    if (adminPassword === "20482708") {
-      setAuthorized(true);
-    } else {
-      alert("Неверный пароль!");
-    }
-  };
+    if (adminPassword === '20482708') setAuthorized(true)
+    else alert('Неверный пароль!')
+  }
 
-  // Функция для загрузки данных выбранного пользователя: балансов, receiving address (для каждого токена) и транзакций
-  const loadUserData = async (user) => {
-    setSelectedUser(user);
-    setLoading(true);
+  // Загрузить данные по юзеру
+  const loadUserData = async user => {
+    setSelectedUser(user)
+    setLoading(true)
     try {
       const [balRes, txRes] = await Promise.all([
-        axios.get(`http://localhost:3001/api/balances/${user.id}`),
-        axios.get(`http://localhost:3001/api/transactions/${user.id}`)
-      ]);
-      const balMap = {};
-      const addrMap = {};
+        axios.get(`${API}/api/balances/${user.id}`),
+        axios.get(`${API}/api/transactions/${user.id}`)
+      ])
+      const balMap = {},
+        addrMap = {}
       balRes.data.forEach(b => {
-        const token = b.token.toUpperCase();
-        balMap[token] = b.amount;
-        addrMap[token] = b.receive_address || '';
-      });
-      setBalances(balMap);
-      setBalanceAddresses(addrMap);
-      setTransactions(txRes.data);
+        const t = b.token.toUpperCase()
+        balMap[t] = b.amount
+        addrMap[t] = b.receive_address || ''
+      })
+      setBalances(balMap)
+      setBalanceAddresses(addrMap)
+      setTransactions(txRes.data)
     } catch (err) {
-      console.error('Error loading user data:', err);
+      console.error(err)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
-  // Обновление receiving address для конкретного токена (в таблице balances)
-  const updateBalanceAddress = (token, address) => {
-    axios.post('http://localhost:3001/api/admin/update-balance-address', {
+  // Эндпоинты
+  const postAdmin = (url, body) =>
+    axios.post(`${API}${url}`, { ...body, secret: ADMIN_SECRET })
+
+  const updateBalance = (token, amount) =>
+    postAdmin('/api/admin/update-balance', {
       user_id: selectedUser.id,
       token,
-      receive_address: address,
-      secret: 'admin123'
+      amount: parseFloat(amount)
     })
-      .then(() => {
-        alert('Receiving address updated successfully.');
-        loadUserData(selectedUser);
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Ошибка при обновлении receiving address');
-      });
-  };
+      .then(() => loadUserData(selectedUser))
+      .catch(err => alert(err.message))
 
-  // Обновление баланса (admin)
-  const updateBalance = (token, amount) => {
-    axios.post('http://localhost:3001/api/admin/update-balance', {
+  const updateBalanceAddress = (token, addr) =>
+    postAdmin('/api/admin/update-balance-address', {
       user_id: selectedUser.id,
       token,
-      amount: parseFloat(amount),
-      secret: 'admin123'
-    }).then(() => {
-      alert('Баланс обновлён');
-      loadUserData(selectedUser);
-    }).catch(err => {
-      console.error(err);
-      alert('Ошибка при обновлении баланса');
-    });
-  };
-
-  // Обновление транзакции
-  const updateTransaction = (tx) => {
-    const formattedDate = new Date(tx.date).toISOString();
-    axios.post('http://localhost:3001/api/admin/update-transaction', {
-      id: tx.id,
-      token: tx.token,
-      amount: parseFloat(tx.amount),
-      to_address: tx.to_address,
-      status: tx.status,
-      date: formattedDate,
-      secret: 'admin123'
+      receive_address: addr
     })
-      .then(() => {
-        alert('Транзакция обновлена');
-        loadUserData(selectedUser);
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Ошибка при обновлении транзакции');
-      });
-  };
+      .then(() => loadUserData(selectedUser))
+      .catch(err => alert(err.message))
 
-  // Удаление транзакции
-  const deleteTransaction = (id) => {
-    axios.post('http://localhost:3001/api/admin/delete-transaction', {
-      id,
-      secret: 'admin123',
+  const updateTransaction = tx => {
+    const date = new Date(tx.date).toISOString()
+    postAdmin('/api/admin/update-transaction', { ...tx, date })
+      .then(() => loadUserData(selectedUser))
+      .catch(err => alert(err.message))
+  }
+
+  const deleteTransaction = id =>
+    postAdmin('/api/admin/delete-transaction', { id })
+      .then(() => loadUserData(selectedUser))
+      .catch(err => alert(err.message))
+
+  const createTransaction = tx =>
+    postAdmin('/api/admin/create-transaction', {
+      ...tx,
+      date: new Date(tx.date).toISOString(),
+      user_id: selectedUser.id
     })
-      .then(() => {
-        alert('Удалено');
-        loadUserData(selectedUser);
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Ошибка при удалении');
-      });
-  };
+      .then(() => loadUserData(selectedUser))
+      .catch(err => alert(err.message))
 
-  // Создание новой транзакции
-  const createTransaction = () => {
-    if (!newTx.token || !newTx.amount || !newTx.to_address || !newTx.status || !newTx.date) {
-      alert('Заполните все поля');
-      return;
-    }
-    const finalDate = new Date(newTx.date).toISOString();
-    axios.post('http://localhost:3001/api/admin/create-transaction', {
-      ...newTx,
-      date: finalDate,
-      user_id: selectedUser.id,
-      secret: 'admin123'
-    })
-      .then(() => {
-        alert('Транзакция создана');
-        setNewTx({ token: '', amount: '', to_address: '', status: '', date: '' });
-        loadUserData(selectedUser);
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Ошибка при создании транзакции');
-      });
-  };
-
-  // Функция для установки даты у новой транзакции
-  const handleNewTxDateChange = (date) => {
-    setNewTx(prev => ({ ...prev, date }));
-  };
-
-  // Функция для изменения даты в уже существующих транзакциях
-  const handleExistingTxDateChange = (date, index) => {
-    const updated = [...transactions];
-    updated[index].date = date;
-    setTransactions(updated);
-  };
+  // «Рандомная» транзакция
+  const generateRandomTx = () => {
+    if (!selectedUser) return alert('Сначала выберите пользователя')
+    const token = ALL_TOKENS[Math.floor(Math.random() * ALL_TOKENS.length)]
+    const amount = (Math.random() * 99 + 1).toFixed(4)
+    const to_address = balanceAddresses[token] || ''
+    const status = 'Success'
+    const date = new Date().toISOString()
+    createTransaction({ token, amount, to_address, status, date })
+  }
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Segoe UI', backgroundColor: '#111', color: '#fff' }}>
+    <div style={{ padding: 24, background: '#111', color: '#fff' }}>
       {!authorized ? (
         <div>
           <h2>Admin Login</h2>
@@ -177,96 +131,76 @@ function AdminPage() {
             type="password"
             placeholder="Введите пароль"
             value={adminPassword}
-            onChange={(e) => setAdminPassword(e.target.value)}
-            style={{ marginRight: '10px', padding: '6px', borderRadius: '4px', width: '200px' }}
+            onChange={e => setAdminPassword(e.target.value)}
+            style={{ marginRight: 8 }}
           />
-          <button
-            onClick={handleLogin}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: '#6c63ff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Login
-          </button>
+          <button onClick={handleLogin}>Login</button>
         </div>
       ) : (
         <>
           <h2>👨‍💻 Admin Panel</h2>
+
           <h3>Users</h3>
-          <div style={{ marginBottom: '20px' }}>
-            {users.map(user => (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+            {users.map(u => (
               <button
-                key={user.id}
-                onClick={() => loadUserData(user)}
+                key={u.id}
+                onClick={() => loadUserData(u)}
                 style={{
-                  margin: '5px',
-                  padding: '8px',
-                  background: selectedUser?.id === user.id ? '#0ff' : '#ccc',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
+                  padding: 8,
+                  background: selectedUser?.id === u.id ? '#0ff' : '#333'
                 }}
               >
-                {user.mnemonic.split(' ').slice(0, 3).join(' ')}...
+                {u.mnemonic.split(' ').slice(0, 3).join(' ')}…
               </button>
             ))}
           </div>
 
-          {loading && <p>Loading data...</p>}
+          {loading && <p>Loading...</p>}
 
           {selectedUser && (
             <>
-              <h3>Balances & Addresses for user #{selectedUser.id}</h3>
+              <h3>Balances & Addresses for #{selectedUser.id}</h3>
               {ALL_TOKENS.map(token => (
-                <div key={token} style={{ marginBottom: '10px', background: '#222', padding: '10px', borderRadius: '6px' }}>
-                  {/* Баланс */}
-                  <div style={{ marginBottom: '8px' }}>
-                    <label><strong>{token} Balance: </strong></label>
+                <div
+                  key={token}
+                  style={{
+                    background: '#222',
+                    padding: 12,
+                    borderRadius: 6,
+                    marginBottom: 8
+                  }}
+                >
+                  <div>
+                    <strong>{token}:</strong>{' '}
                     <input
                       type="number"
                       value={balances[token] ?? ''}
-                      onChange={(e) => setBalances(prev => ({ ...prev, [token]: e.target.value }))}
-                      style={{ marginLeft: '10px', width: '100px', color: '#000' }}
+                      onChange={e =>
+                        setBalances(b => ({ ...b, [token]: e.target.value }))
+                      }
                     />
-                    <button
-                      onClick={() => updateBalance(token, balances[token])}
-                      style={{
-                        marginLeft: '10px',
-                        padding: '4px 8px',
-                        backgroundColor: 'lime',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
-                    >
+                    <button onClick={() => updateBalance(token, balances[token])}>
                       Save
                     </button>
                   </div>
-                  {/* Receiving Address для конкретного токена */}
-                  <div>
-                    <label><strong>{token} Address: </strong></label>
+                  <div style={{ marginTop: 6 }}>
+                    <strong>Address:</strong>{' '}
                     <input
                       type="text"
                       value={balanceAddresses[token] ?? ''}
-                      onChange={(e) => setBalanceAddresses(prev => ({ ...prev, [token]: e.target.value }))}
-                      style={{ marginLeft: '10px', width: '300px', color: '#000' }}
+                      onChange={e =>
+                        setBalanceAddresses(a => ({
+                          ...a,
+                          [token]: e.target.value
+                        }))
+                      }
+                      style={{ width: 300 }}
                     />
                     <button
-                      onClick={() => updateBalanceAddress(token, balanceAddresses[token])}
-                      style={{
-                        marginLeft: '10px',
-                        padding: '4px 8px',
-                        backgroundColor: '#6c63ff',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
+                      onClick={() =>
+                        updateBalanceAddress(token, balanceAddresses[token])
+                      }
                     >
                       Save Addr
                     </button>
@@ -275,156 +209,104 @@ function AdminPage() {
               ))}
 
               <h3>Create Transaction</h3>
-              <div style={{ background: '#222', padding: '10px', borderRadius: '6px', marginBottom: '1rem' }}>
-                <input
-                  placeholder="Token"
-                  value={newTx.token}
-                  onChange={(e) => setNewTx(prev => ({ ...prev, token: e.target.value }))}
-                  style={{ marginRight: '5px', color: '#000', width: '80px' }}
-                />
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  value={newTx.amount}
-                  onChange={(e) => setNewTx(prev => ({ ...prev, amount: e.target.value }))}
-                  style={{ marginRight: '5px', color: '#000', width: '80px' }}
-                />
-                <input
-                  placeholder="To Address"
-                  value={newTx.to_address}
-                  onChange={(e) => setNewTx(prev => ({ ...prev, to_address: e.target.value }))}
-                  style={{ marginRight: '5px', color: '#000', width: '160px' }}
-                />
-                <input
-                  placeholder="Status"
-                  value={newTx.status}
-                  onChange={(e) => setNewTx(prev => ({ ...prev, status: e.target.value }))}
-                  style={{ marginRight: '5px', color: '#000', width: '100px' }}
-                />
-                <DatePicker
-                  selected={newTx.date ? new Date(newTx.date) : null}
-                  onChange={handleNewTxDateChange}
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  dateFormat="yyyy-MM-dd HH:mm"
-                  minDate={new Date(2000, 0, 1)}
-                  maxDate={new Date(2050, 11, 31, 23, 59)}
-                  className="datePickerInput"
-                  style={{ marginRight: '5px', width: '160px' }}
-                />
-                <button
-                  onClick={createTransaction}
-                  style={{
-                    background: '#0ff',
-                    padding: '4px 8px',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                  }}
-                >
-                  ➕ Create
+              <div style={{ background: '#222', padding: 12, borderRadius: 6 }}>
+                <button onClick={generateRandomTx} style={{ marginBottom: 12 }}>
+                  🚀 Generate Random Tx
                 </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    placeholder="Token"
+                    value={newTx.token}
+                    onChange={e => setNewTx(tx => ({ ...tx, token: e.target.value }))}
+                  />
+                  <input
+                    placeholder="Amount"
+                    type="number"
+                    value={newTx.amount}
+                    onChange={e => setNewTx(tx => ({ ...tx, amount: e.target.value }))}
+                  />
+                  <input
+                    placeholder="To Address"
+                    value={newTx.to_address}
+                    onChange={e =>
+                      setNewTx(tx => ({ ...tx, to_address: e.target.value }))
+                    }
+                  />
+                  <input
+                    placeholder="Status"
+                    value={newTx.status}
+                    onChange={e => setNewTx(tx => ({ ...tx, status: e.target.value }))}
+                  />
+                  <DatePicker
+                    selected={newTx.date ? new Date(newTx.date) : null}
+                    onChange={d => setNewTx(tx => ({ ...tx, date: d }))}
+                    showTimeSelect
+                    dateFormat="yyyy-MM-dd HH:mm"
+                  />
+                  <button onClick={() => createTransaction(newTx)}>➕ Create</button>
+                </div>
               </div>
 
               <h3>Transaction History</h3>
-              {transactions.length === 0 ? (
-                <p>No transactions yet.</p>
-              ) : transactions.map((tx, index) => {
-                let currentDate = null;
-                try {
-                  currentDate = tx.date ? new Date(tx.date) : null;
-                } catch (e) {
-                  console.error('Invalid date format:', tx.date);
-                }
-                return (
-                  <div key={tx.id} style={{ background: '#222', padding: '10px', marginBottom: '10px', borderRadius: '6px' }}>
-                    <input
-                      type="text"
-                      value={tx.token}
-                      onChange={(e) => {
-                        const updated = [...transactions];
-                        updated[index].token = e.target.value;
-                        setTransactions(updated);
-                      }}
-                      style={{ marginRight: '6px', color: '#000', width: '60px' }}
-                    />
-                    <input
-                      type="number"
-                      value={tx.amount}
-                      onChange={(e) => {
-                        const updated = [...transactions];
-                        updated[index].amount = e.target.value;
-                        setTransactions(updated);
-                      }}
-                      style={{ marginRight: '6px', color: '#000', width: '80px' }}
-                    />
-                    <input
-                      type="text"
-                      value={tx.to_address}
-                      onChange={(e) => {
-                        const updated = [...transactions];
-                        updated[index].to_address = e.target.value;
-                        setTransactions(updated);
-                      }}
-                      style={{ marginRight: '6px', color: '#000', width: '180px' }}
-                    />
-                    <input
-                      type="text"
-                      value={tx.status}
-                      onChange={(e) => {
-                        const updated = [...transactions];
-                        updated[index].status = e.target.value;
-                        setTransactions(updated);
-                      }}
-                      style={{ marginRight: '6px', color: '#000', width: '120px' }}
-                    />
-                    <DatePicker
-                      selected={currentDate}
-                      onChange={(date) => handleExistingTxDateChange(date, index)}
-                      showTimeSelect
-                      timeFormat="HH:mm"
-                      timeIntervals={15}
-                      dateFormat="yyyy-MM-dd HH:mm"
-                      minDate={new Date(2000, 0, 1)}
-                      maxDate={new Date(2050, 11, 31, 23, 59)}
-                      className="datePickerInput"
-                      style={{ marginRight: '6px', width: '160px' }}
-                    />
-                    <button
-                      onClick={() => updateTransaction(tx)}
-                      style={{
-                        background: 'lime',
-                        padding: '4px 8px',
-                        marginRight: '4px',
-                        border: 'none',
-                        borderRadius: '4px'
-                      }}
-                    >
-                      💾 Save
-                    </button>
-                    <button
-                      onClick={() => deleteTransaction(tx.id)}
-                      style={{
-                        background: 'red',
-                        color: '#fff',
-                        padding: '4px 8px',
-                        border: 'none',
-                        borderRadius: '4px'
-                      }}
-                    >
-                      🗑 Delete
-                    </button>
-                  </div>
-                );
-              })}
+              {transactions.map(tx => (
+                <div
+                  key={tx.id}
+                  style={{
+                    background: '#222',
+                    padding: 12,
+                    borderRadius: 6,
+                    marginBottom: 8,
+                    display: 'flex',
+                    gap: 8,
+                    alignItems: 'center'
+                  }}
+                >
+                  <input
+                    value={tx.token}
+                    onChange={e => {
+                      tx.token = e.target.value
+                      setTransactions(ts => [...ts])
+                    }}
+                  />
+                  <input
+                    type="number"
+                    value={tx.amount}
+                    onChange={e => {
+                      tx.amount = e.target.value
+                      setTransactions(ts => [...ts])
+                    }}
+                  />
+                  <input
+                    value={tx.to_address}
+                    onChange={e => {
+                      tx.to_address = e.target.value
+                      setTransactions(ts => [...ts])
+                    }}
+                  />
+                  <input
+                    value={tx.status}
+                    onChange={e => {
+                      tx.status = e.target.value
+                      setTransactions(ts => [...ts])
+                    }}
+                  />
+                  <DatePicker
+                    selected={new Date(tx.date)}
+                    onChange={d => {
+                      tx.date = d
+                      setTransactions(ts => [...ts])
+                    }}
+                    showTimeSelect
+                    dateFormat="yyyy-MM-dd HH:mm"
+                  />
+                  <button onClick={() => updateTransaction(tx)}>💾 Save</button>
+                  <button onClick={() => deleteTransaction(tx.id)}>🗑 Delete</button>
+                </div>
+              ))}
             </>
           )}
         </>
       )}
     </div>
-  );
+  )
 }
-
-export default AdminPage;
