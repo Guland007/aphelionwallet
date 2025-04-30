@@ -17,28 +17,28 @@ function StartPage() {
         <div className="pulse-wave"></div>
         <div className="content-box">
           <h1 className="logo-title">Aphelion Wallet</h1>
-          <p className="tagline">Будущее управления криптоактивами</p>
+          <p className="tagline">The future of crypto asset management</p>
 
           <div className="button-row">
             <button 
               onClick={() => navigate('/start')}
               className="neon-button"
             >
-              Войти
+              Log in
             </button>
             <button 
               onClick={() => navigate('/start?generate=true')}
               className="neon-button"
             >
-              Сгенерировать
+              Generate
             </button>
           </div>
 
           <ul className="features">
-            <li> Мгновенные транзакции</li>
-            <li> Защита сид-фразой</li>
-            <li> Поддержка множества токенов</li>
-            <li> Прозрачная история операций</li>
+            <li> Instant transactions</li>
+            <li> Seed phrase protection</li>
+            <li> Support for multiple tokens</li>
+            <li> Transparent transaction history</li>
           </ul>
         </div>
       </div>
