@@ -29,6 +29,8 @@ function WalletPage() {
     { symbol: 'BTC',   name: 'Bitcoin'        },
     { symbol: 'SHIBA', name: 'Shiba Inu'      },
   ];
+  const getIconUrl = (symbol) =>
+    `${import.meta.env.BASE_URL}icons/${symbol.toLowerCase()}.png`;
 
   // Получение транзакций
   const fetchTransactions = async () => {
@@ -259,9 +261,7 @@ function WalletPage() {
       closeSendModal();
     }
   };
-  const getIconUrl = (symbol) =>
-    `${import.meta.env.BASE_URL}icons/${symbol.toLowerCase()}.png`;
-
+ 
   // Стили для таблицы
   const th = { padding: '10px', textAlign: 'left', borderBottom: '1px solid #ccc' };
   const td = { padding: '10px' };
