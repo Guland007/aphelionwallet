@@ -15,7 +15,6 @@ function WalletPage() {
   const [sendCount, setSendCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [tokenBalances, setTokenBalances] = useState({});
-  const [receiveAddresses, setReceiveAddresses] = useState({});
   const [transactions, setTransactions] = useState([]);
   const [selectedToken, setSelectedToken] = useState('ALL');
   const [confirmationModal, setConfirmationModal] = useState(false);
@@ -445,8 +444,8 @@ function WalletPage() {
             </h3>
             <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>Ваш адрес:</p>
             <code style={{ fontSize: '13px', wordBreak: 'break-all', color: '#444' }}>
-              {walletAddress}
-            </code>
+  {RECEIVE_ADDRESSES[receiveModal.token.symbol]}
+</code>
             <div style={{ marginTop: '20px' }}>
               <button
                 onClick={closeReceiveModal}
