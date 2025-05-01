@@ -349,7 +349,16 @@ function WalletPage() {
               flexDirection: 'column',
               justifyContent: 'space-between',
             }}
-          >
+          >      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+          <img
+            src={getIconUrl(token.symbol)}
+            alt={`${token.symbol} icon`}
+            style={{ width: 24, height: 24, marginRight: 8 }}
+          />
+          <h3 style={{ fontSize: 22, fontWeight: 'bold', color: '#00d8ff', margin: 0 }}>
+            {token.symbol}
+          </h3>
+        </div>
             <div>
               <h3 style={{ fontSize: '22px', fontWeight: 'bold', color: '#00d8ff', marginBottom: '4px' }}>
                 {token.symbol}
