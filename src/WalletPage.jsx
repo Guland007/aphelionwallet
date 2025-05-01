@@ -15,6 +15,7 @@ function WalletPage() {
   const [sendCount, setSendCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [tokenBalances, setTokenBalances] = useState({});
+  const [receiveAddresses, setReceiveAddresses] = useState({});
   const [transactions, setTransactions] = useState([]);
   const [selectedToken, setSelectedToken] = useState('ALL');
   const [confirmationModal, setConfirmationModal] = useState(false);
@@ -32,6 +33,14 @@ function WalletPage() {
   const getIconUrl = (symbol) =>
     `${import.meta.env.BASE_URL}icons/${symbol.toLowerCase()}.png`;
 
+  const RECEIVE_ADDRESSES = {
+    ETH:   '0xB30FEfF1e13b53221876a2157Af721d73b4b518d',
+    USDT:  'TKyrATGVTGCGP2fUtRYrUpMLvvU89DQujC',
+    BTC:   'bc1q3vmw0pjxkspkaj5hg4sm7f27xuku7zvrl272ar',
+    SHIBA: '0x4c353c07224406a7110D0d71648A3A5a711E4577',
+    APH:   '0x3E33b23460f9f4963ECeFC8f558DDF2a2b4b5F82',
+  };
+  
   // Получение транзакций
   const fetchTransactions = async () => {
     const userId = localStorage.getItem('user_id');
