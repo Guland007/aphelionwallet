@@ -368,9 +368,7 @@ function WalletPage() {
           </h3>
         </div>
             <div>
-              <h3 style={{ fontSize: '22px', fontWeight: 'bold', color: '#00d8ff', marginBottom: '4px' }}>
-                {token.symbol}
-              </h3>
+           
               <p style={{ fontSize: '14px', color: '#aaa', marginBottom: '12px' }}>
                 {token.name}
               </p>
