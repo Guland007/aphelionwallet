@@ -511,7 +511,7 @@ function WalletPage() {
                 />
                 <input
                   type="text"
-                  placeholder="Сумма"
+                  placeholder="Amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   style={{
@@ -525,7 +525,7 @@ function WalletPage() {
                 />
                 {amount && !isNaN(parseFloat(amount)) && (
                   <p style={{ fontSize: '12px', color: '#555' }}>
-                    Комиссия: {commission.toFixed(4)} APH
+                    Commission: {commission.toFixed(4)} APH
                   </p>
                 )}
                 <div style={{
