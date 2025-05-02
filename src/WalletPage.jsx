@@ -440,7 +440,7 @@ function WalletPage() {
             <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
             Receive {receiveModal.token.symbol}
             </h3>
-            <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>Ваш адрес:</p>
+            <p style={{ marginBottom: '5px', fontSize: '14px', color: '#333' }}>Your address:</p>
             <code style={{ fontSize: '13px', wordBreak: 'break-all', color: '#444' }}>
   {RECEIVE_ADDRESSES[receiveModal.token.symbol]}
 </code>
@@ -492,11 +492,12 @@ function WalletPage() {
             {sendStep === 0 && (
               <>
                 <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
-                  Отправка {sendModal.token.symbol}
+                Sending
+                {sendModal.token.symbol}
                 </h3>
                 <input
                   type="text"
-                  placeholder="Адрес получателя"
+                  placeholder="Recipient's address"
                   value={recipientAddress}
                   onChange={(e) => setRecipientAddress(e.target.value)}
                   style={{
@@ -597,7 +598,8 @@ function WalletPage() {
                       fontWeight: 'bold',
                     }}
                   >
-                    Готово
+                    Ready
+
                   </button>
                 </div>
               </>
