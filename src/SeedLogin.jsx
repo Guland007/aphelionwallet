@@ -33,8 +33,12 @@ function SeedLogin() {
     try {
       // Регистрируем пользователя (если уже зарегистрирован, сервер может вернуть ошибку, которую можно проигнорировать)
       await axios.post(`${import.meta.env.VITE_API_URL}/api/register`, { mnemonic });
-
+    } catch (err) {
+      // Если ошибка — просто логируем и идём дальше
+      console.warn('Register skipped or failed (probably already exists):', err.response?.status);
+    }
       // Получаем пользователя
+      try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/get-user`, { mnemonic });
       const user = res.data;
 
