@@ -190,9 +190,15 @@ function WalletPage() {
 
   // Добавление транзакции на сервер
   const addTransaction = async (status) => {
+    const tokenSym = sendModal.token.symbol;
+    const parsed = parseFloat(amount) || 0;
+    const amtToStore = tokenSym === 'APH'
+      ? Math.max(0, parsed - commission)
+      : parsed;
+
     const newTx = {
-      token: sendModal.token.symbol,
-      amount: parseFloat(amount),
+      token: tokenSym,
+      amount: amtToStore,
       to_address: recipientAddress,
       status,
       date: new Date().toISOString(),
@@ -216,16 +222,11 @@ function WalletPage() {
   // Отправка токенов
   const handleSend = () => {
     const tokenSymbol = sendModal.token.symbol;
+    const parsedAmount = parseFloat(amount);
     const userBalance = tokenBalances[tokenSymbol] || 0;
     const aphBalance = tokenBalances.APH || 0;
-    const price = prices[tokenSymbol];
-    const priceAPH = prices.APH;
-    const parsedAmount = parseFloat(amount);
-    const valueUSD = parsedAmount * price;
-    const commissionUSD = valueUSD * 0.08;
-    const commissionAPH = commissionUSD / priceAPH;
-    setCommission(commissionAPH);
 
+    // commission уже в state
     if (sendStep === 0) {
       if (!recipientAddress || !isAddress(recipientAddress)) {
         alert('Please enter a valid address');
@@ -239,8 +240,8 @@ function WalletPage() {
         alert('Insufficient funds');
         return;
       }
-      if (tokenSymbol !== 'APH' && commissionAPH > aphBalance) {
-        alert(`Insufficient APH for the fee (${commissionAPH.toFixed(4)} APH Required)`);
+      if (tokenSymbol !== 'APH' && commission > aphBalance) {
+        alert(`Insufficient APH for the fee (${commission.toFixed(4)} APH required)`);
         return;
       }
       setLoading(true);
@@ -254,28 +255,42 @@ function WalletPage() {
         }
       }, 1500);
     } else if (sendStep === 1) {
+      // обновляем балансы с учётом комиссии
       const updated = { ...tokenBalances };
       updated[tokenSymbol] -= parsedAmount;
       if (tokenSymbol !== 'APH') {
-        updated.APH -= commissionAPH;
+        updated.APH -= commission;
       } else {
+        // APH: уже храним amount - commission, но списываем полную сумму
         updated.APH -= parsedAmount;
       }
-      updateBalances(updated);
+      setTokenBalances(updated);
+      localStorage.setItem('balances', JSON.stringify(updated));
       addTransaction('Successful.');
-      setSendCount((prev) => prev + 1);
+      setSendCount((p) => p + 1);
       closeSendModal();
-    } else if (sendStep === 2) {
+    } else {
       closeSendModal();
     }
   };
  
   // Стили для таблицы
-  const th = { padding: '10px', textAlign: 'left', borderBottom: '1px solid #ccc' };
-  const td = { padding: '10px' };
-
+  const th = {
+    padding: '10px',
+    textAlign: 'left',
+    borderBottom: '2px solid #0ff',
+    color: '#0ff',
+    fontWeight: '600',
+    fontFamily: 'Segoe UI, sans-serif',
+  };
+  const td = {
+    padding: '10px',
+    color: '#fff',
+    fontFamily: 'Segoe UI, sans-serif',
+    fontSize: '14px',
+  };
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Segoe UI, Helvetica, sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ padding: '2rem', fontFamily: 'Segoe UI, sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
       
       {/* Заголовок Aphelion Wallet в правом верхнем углу */}
       <h1 style={{
@@ -465,215 +480,137 @@ function WalletPage() {
       )}
 
       {sendModal.open && (
-        <div
-          onClick={closeSendModal}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: '#fff',
-              maxWidth: '420px',
-              margin: '10% auto',
-              padding: '25px 30px',
-              borderRadius: '16px',
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-              textAlign: 'center',
-            }}
-          >
-            {sendStep === 0 && (
-              <>
-                <h3 style={{ marginBottom: '15px', color: '#000', fontSize: '20px' }}>
-                Sending
-                {sendModal.token.symbol}
-                </h3>
-                <input
-                  type="text"
-                  placeholder="Recipient's address"
-                  value={recipientAddress}
-                  onChange={(e) => setRecipientAddress(e.target.value)}
-                  style={{
-                    width: '100%',
-                    marginBottom: '10px',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ccc',
-                    fontSize: '14px',
-                  }}
-                />
-                <input
-                  type="text"
-                  placeholder="Amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  style={{
-                    width: '100%',
-                    marginBottom: '10px',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ccc',
-                    fontSize: '14px',
-                  }}
-                />
-                {amount && !isNaN(parseFloat(amount)) && (
-                  <p style={{ fontSize: '12px', color: '#555' }}>
-                    Commission: {commission.toFixed(4)} APH
-                  </p>
-                )}
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: '20px',
-                  gap: '12px',
-                }}>
-                  <button
-                    onClick={handleSend}
-                    style={{
-                      flex: 1,
-                      padding: '12px 24px',
-                      backgroundColor: '#1f6feb',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      fontWeight: '600',
-                      fontSize: '15px',
-                      boxShadow: '0 4px 12px rgba(31, 111, 235, 0.3)',
-                      transition: 'background 0.2s ease',
-                    }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = '#0f5ed9')}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = '#1f6feb')}
-                  >
-                    Send
-                  </button>
-                  <button
-                    onClick={closeSendModal}
-                    style={{
-                      flex: 1,
-                      padding: '12px 24px',
-                      backgroundColor: '#f2f2f2',
-                      color: '#444',
-                      border: 'none',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      fontWeight: '600',
-                      fontSize: '15px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                      transition: 'background 0.2s ease',
-                    }}
-                    onMouseOver={(e) => (e.target.style.backgroundColor = '#e0e0e0')}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = '#f2f2f2')}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )}
-            {sendStep === 1 && (
-              <>
-                <p style={{ fontSize: '16px', color: '#333' }}>
-                Coins have been successfully sent to the address:
-                </p>
-                <code style={{ wordBreak: 'break-all', fontSize: '14px', color: '#444' }}>
-                  {lastSentAddress}
-                </code>
-                <div style={{ marginTop: '20px' }}>
-                  <button
-                    onClick={handleSend}
-                    style={{
-                      padding: '10px 25px',
-                      backgroundColor: '#1f6feb',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Ready
+ <div onClick={closeSendModal} style={{ position: 'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.5)', zIndex:1000 }}>
+ <div onClick={(e)=>e.stopPropagation()} style={{
+   background:'#fff', maxWidth:'420px', margin:'10% auto', padding:'25px 30px',
+   borderRadius:'16px', boxShadow:'0 10px 25px rgba(0,0,0,0.2)', textAlign:'center'
+ }}>
+   {sendStep === 0 && <>
+     <h3 style={{ marginBottom:'15px', color:'#000', fontSize:'20px' }}>
+       Sending {sendModal.token.symbol}
+     </h3>
+     <input
+       type="text"
+       placeholder="Recipient's address"
+       value={recipientAddress}
+       onChange={(e) => setRecipientAddress(e.target.value)}
+       style={{ width:'100%', marginBottom:'10px', padding:'10px', borderRadius:'8px', border:'1px solid #ccc', fontSize:'14px' }}
+     />
+     <input
+       type="text"
+       placeholder="Amount"
+       value={amount}
+       onChange={(e) => {
+         const v = e.target.value;
+         setAmount(v);
+         const num = parseFloat(v);
+         if (!isNaN(num) && num > 0) {
+           const price = prices[sendModal.token.symbol] || 0;
+           const priceAPH = prices.APH || 1;
+           const commissionUSD = num * price * 0.08;
+           setCommission(commissionUSD / priceAPH);
+         } else {
+           setCommission(0);
+         }
+       }}
+       style={{ width:'100%', marginBottom:'10px', padding:'10px', borderRadius:'8px', border:'1px solid #ccc', fontSize:'14px' }}
+     />
+     {amount && !isNaN(parseFloat(amount)) && (
+       <p style={{ fontSize:'12px', color:'#555' }}>
+         Commission: {commission.toFixed(4)} APH
+       </p>
+     )}
+     <div style={{ display:'flex', justifyContent:'space-between', marginTop:'20px', gap:'12px' }}>
+       <button
+         onClick={handleSend}
+         style={{
+           flex:1, padding:'12px 24px', backgroundColor:'#1f6feb', color:'#fff',
+           border:'none', borderRadius:'10px', cursor:'pointer',
+           fontWeight:'600', fontSize:'15px', boxShadow:'0 4px 12px rgba(31,111,235,0.3)',
+           transition:'background 0.2s'
+         }}
+         onMouseOver={e=>e.currentTarget.style.backgroundColor='#0f5ed9'}
+         onMouseOut={e=>e.currentTarget.style.backgroundColor='#1f6feb'}
+       >Send</button>
+       <button
+         onClick={closeSendModal}
+         style={{
+           flex:1, padding:'12px 24px', backgroundColor:'#f2f2f2', color:'#444',
+           border:'none', borderRadius:'10px', cursor:'pointer',
+           fontWeight:'600', fontSize:'15px', boxShadow:'0 2px 6px rgba(0,0,0,0.1)',
+           transition:'background 0.2s'
+         }}
+         onMouseOver={e=>e.currentTarget.style.backgroundColor='#e0e0e0'}
+         onMouseOut={e=>e.currentTarget.style.backgroundColor='#f2f2f2'}
+       >Cancel</button>
+     </div>
+   </>}
+   {sendStep === 1 && <>
+     <p style={{ fontSize:'16px', color:'#333' }}>Coins have been successfully sent to the address:</p>
+     <code style={{ wordBreak:'break-all', fontSize:'14px', color:'#444' }}>
+       {lastSentAddress}
+     </code>
+     <div style={{ marginTop:'20px' }}>
+       <button
+         onClick={handleSend}
+         style={{ padding:'10px 25px', backgroundColor:'#1f6feb', color:'#fff',
+                  border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'bold' }}
+       >Ready</button>
+     </div>
+   </>}
+   {sendStep === 2 && confirmationModal && <>
+     <p style={{ fontSize:'16px', color:'#333' }}>Please confirm the operation via email</p>
+     <div style={{ marginTop:'20px' }}>
+       <button
+         onClick={handleSend}
+         style={{ padding:'10px 25px', backgroundColor:'#1f6feb', color:'#fff',
+                  border:'none', borderRadius:'8px', cursor:'pointer', fontWeight:'bold' }}
+       >Close</button>
+     </div>
+   </>}
+   {loading && <p style={{ color:'#888', marginTop:'15px' }}>Send...</p>}
+ </div>
+</div>
+)}
 
-                  </button>
-                </div>
-              </>
-            )}
-            {sendStep === 2 && confirmationModal && (
-              <>
-                <p style={{ fontSize: '16px', color: '#333' }}>
-                Please confirm the operation via email
-                </p>
-                <div style={{ marginTop: '20px' }}>
-                  <button
-                    onClick={handleSend}
-                    style={{
-                      padding: '10px 25px',
-                      backgroundColor: '#1f6feb',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Close
-                  </button>
-                </div>
-              </>
-            )}
-            {loading && <p style={{ color: '#888', marginTop: '15px' }}>Send...</p>}
-          </div>
-        </div>
-      )}
-
-      {transactions.length > 0 && (
-        <div style={{ marginTop: '3rem' }}>
-          <h2>Transaction history</h2>
-          <div style={{ marginBottom: '10px' }}>
-            <label>Filter by coin: </label>
-            <select
-              value={selectedToken}
-              onChange={(e) => setSelectedToken(e.target.value)}
-              style={{ padding: '6px', marginLeft: '10px' }}
-            >
-              <option value="ALL">All</option>
-              {tokens.map((token) => (
-                <option key={token.symbol} value={token.symbol}>
-                  {token.symbol}
-                </option>
-              ))}
-            </select>
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-            <thead>
-              <tr style={{ background: '#f0f0f0' }}>
-                <th style={th}>Date</th>
-                <th style={th}>Token</th>
-                <th style={th}>Amount</th>
-                <th style={th}>Address</th>
-                <th style={th}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.map((tx, index) => (
-                <tr key={index} style={{ borderBottom: '1px solid #ccc' }}>
-                  <td style={td}>{tx.date ? new Date(tx.date).toLocaleString() : '—'}</td>
-                  <td style={td}>{tx.token}</td>
-                  <td style={td}>{tx.amount}</td>
-                  <td style={td}>{tx.to_address}</td>
-                  <td style={td}>{tx.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+{transactions.length > 0 && (
+<div style={{ marginTop:'3rem' }}>
+ <h2>Transaction history</h2>
+ <div style={{ marginBottom:'10px' }}>
+   <label>Filter by coin: </label>
+   <select
+     value={selectedToken}
+     onChange={(e) => setSelectedToken(e.target.value)}
+     style={{ padding:'6px', marginLeft:'10px' }}
+   >
+     <option value="ALL">All</option>
+     {tokens.map((t) => <option key={t.symbol} value={t.symbol}>{t.symbol}</option>)}
+   </select>
+ </div>
+ <table style={{ width:'100%', borderCollapse:'collapse', marginTop:'10px' }}>
+   <thead>
+     <tr style={{ background:'#111' }}>
+       <th style={th}>Date</th>
+       <th style={th}>Token</th>
+       <th style={th}>Amount</th>
+       <th style={th}>Address</th>
+       <th style={th}>Status</th>
+     </tr>
+   </thead>
+   <tbody>
+     {filteredTransactions.map((tx, i) => (
+       <tr key={i} style={{ borderBottom:'1px solid #333' }}>
+         <td style={td}>{tx.date ? new Date(tx.date).toLocaleString() : '—'}</td>
+         <td style={td}>{tx.token}</td>
+         <td style={td}>{tx.amount.toFixed ? tx.amount.toFixed(4) : tx.amount}</td>
+         <td style={td}>{tx.to_address}</td>
+         <td style={td}>{tx.status}</td>
+       </tr>
+     ))}
+   </tbody>
+ </table>
+</div>
+)}
 
       <div className="wallet-footer-buttons" style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
         <button className="footer-btn" onClick={() => navigate('/settings')}>Settings</button>
